@@ -91,15 +91,16 @@ function draw() {
         }
     }
 }
-btnReset.addEventListener("click", function () {
+function reset() {
     witdh = Number(txtWidth.value.trim());
     height = Number(txtHeight.value.trim());
     canvas.height = tileHeight * height;
     canvas.width = tileWitdh * witdh;
     generate();
     draw();
-});
-generate();
+}
+btnReset.addEventListener("click", reset);
+reset();
 setInterval(function () {
     tick();
     draw();

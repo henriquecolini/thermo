@@ -136,8 +136,7 @@ function draw() {
 
 }
 
-btnReset.addEventListener("click", () => {
-	
+function reset() {
 	witdh = Number(txtWidth.value.trim());
 	height = Number(txtHeight.value.trim());
 
@@ -146,10 +145,11 @@ btnReset.addEventListener("click", () => {
 
 	generate();
 	draw();
+}
 
-});
+btnReset.addEventListener("click", reset);
 
-generate();
+reset();
 
 setInterval(() => {
 	tick();
