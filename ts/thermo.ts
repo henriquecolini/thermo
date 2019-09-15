@@ -110,7 +110,13 @@ function draw() {
 	
 	ctx.imageSmoothingEnabled = false;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.drawImage(preCanvas,camera.x-(tileWidth*camera.zoom*(width/2)),camera.y-(tileHeight*camera.zoom*(height/2)), tileWidth*width*camera.zoom, tileHeight*height*camera.zoom);
+	ctx.drawImage(
+		preCanvas,
+		camera.x-(tileWidth*camera.zoom*(width/2)),
+		camera.y-(tileHeight*camera.zoom*(height/2)),
+		tileWidth*width*camera.zoom,
+		tileHeight*height*camera.zoom
+	);
 
 }
 
@@ -202,6 +208,28 @@ function handleMouseMove(evt: MouseEvent) {
 	lastPos.y = evt.y;
 }
 
+let scrollHandler: number;
+
+function handleScroll(evt: WheelEvent) {
+
+	evt.preventDefault();
+
+	let sign = evt.deltaY > 0 ? -1 : evt.deltaY == 0 ? 0 : 1;
+	let times = 5;
+	let i = 0;
+
+	clearInterval(scrollHandler);
+
+	scrollHandler = setInterval(()=>{
+		if (i >= times) clearInterval(scrollHandler);
+		else {			
+			camera.zoom *= sign > 0 ? 1.01 : 1/1.01;
+			draw();
+			i++;
+		}
+	}, 1);
+}
+
 // =======================================================================================
 
 // Starts
@@ -224,3 +252,4 @@ window.addEventListener("keyup", (evt) => { if(evt.key === " ") disallowPanning(
 canvas.addEventListener("mousedown", handleMouseDown );
 canvas.addEventListener("mouseup", handleMouseUp );
 canvas.addEventListener("mousemove", handleMouseMove);
+canvas.addEventListener("wheel", handleScroll);

@@ -129,6 +129,23 @@ function handleMouseMove(evt) {
     lastPos.x = evt.x;
     lastPos.y = evt.y;
 }
+var scrollHandler;
+function handleScroll(evt) {
+    evt.preventDefault();
+    var sign = evt.deltaY > 0 ? -1 : evt.deltaY == 0 ? 0 : 1;
+    var times = 5;
+    var i = 0;
+    clearInterval(scrollHandler);
+    scrollHandler = setInterval(function () {
+        if (i >= times)
+            clearInterval(scrollHandler);
+        else {
+            camera.zoom *= sign > 0 ? 1.01 : 1 / 1.01;
+            draw();
+            i++;
+        }
+    }, 1);
+}
 updateCanvasSize();
 camera.x = canvas.width / 2;
 camera.y = canvas.height / 2;
@@ -147,4 +164,5 @@ window.addEventListener("keyup", function (evt) { if (evt.key === " ")
 canvas.addEventListener("mousedown", handleMouseDown);
 canvas.addEventListener("mouseup", handleMouseUp);
 canvas.addEventListener("mousemove", handleMouseMove);
+canvas.addEventListener("wheel", handleScroll);
 //# sourceMappingURL=thermo.js.map
