@@ -5,15 +5,19 @@ var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var preCanvas = document.createElement("canvas");
 var preCtx = preCanvas.getContext("2d");
-var tileWitdh = 12;
+var imageData = preCtx.createImageData(1, 1);
+var tileWidth = 12;
 var tileHeight = 12;
-var witdh = 1;
+var width = 1;
 var height = 1;
 var world;
+var canPan = false;
+var isPanning = false;
+var lastPos = { x: undefined, y: undefined };
 var camera = { x: 0, y: 0, zoom: 1 };
 function generate() {
     world = [];
-    for (var x = 0; x < witdh; x++) {
+    for (var x = 0; x < width; x++) {
         world[x] = [];
         for (var y = 0; y < height; y++) {
             world[x][y] = new Tile(0.1, (Math.random() * 600), 0.02, x, y);
@@ -22,7 +26,7 @@ function generate() {
 }
 function temperatureTick() {
     var arr = [];
-    for (var x = 0; x < witdh; x++) {
+    for (var x = 0; x < width; x++) {
         for (var y = 0; y < height; y++) {
             arr.push(world[x][y]);
         }
@@ -41,7 +45,7 @@ function temperatureTick() {
             directions.push({ tile: world[x][y + 1], xOff: 0, yOff: +1 });
         if (x > 0 && t.temperature > world[x - 1][y].temperature)
             directions.push({ tile: world[x - 1][y], xOff: -1, yOff: 0 });
-        if (x < witdh - 1 && t.temperature > world[x + 1][y].temperature)
+        if (x < width - 1 && t.temperature > world[x + 1][y].temperature)
             directions.push({ tile: world[x + 1][y], xOff: +1, yOff: 0 });
         var originalTemp = t.temperature;
         var sharedTemp = (t.temperature * t.conductivity) / (directions.length + 1);
@@ -55,22 +59,29 @@ function temperatureTick() {
     }
 }
 function drawWorld() {
-    for (var x = 0; x < witdh; x++) {
+    for (var x = 0; x < width; x++) {
         for (var y = 0; y < height; y++) {
-            preCtx.fillStyle = world[x][y].getColor();
-            preCtx.fillRect(x * tileWitdh, y * tileHeight, tileWitdh, tileHeight);
+            var c = world[x][y].getColor();
+            var pI = ((y * width) + x) * 4;
+            imageData.data[pI] = c.R;
+            imageData.data[pI + 1] = c.G;
+            imageData.data[pI + 2] = c.B;
+            imageData.data[pI + 3] = 255;
         }
     }
+    preCtx.putImageData(imageData, 0, 0);
 }
 function draw() {
+    ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(preCanvas, camera.x - (preCanvas.width / 2), camera.y - (preCanvas.height / 2));
+    ctx.drawImage(preCanvas, camera.x - (tileWidth * camera.zoom * (width / 2)), camera.y - (tileHeight * camera.zoom * (height / 2)), tileWidth * width * camera.zoom, tileHeight * height * camera.zoom);
 }
 function reset() {
-    witdh = Number(txtWidth.value.trim());
+    width = Number(txtWidth.value.trim());
     height = Number(txtHeight.value.trim());
-    preCanvas.height = tileHeight * height;
-    preCanvas.width = tileWitdh * witdh;
+    preCanvas.height = height;
+    preCanvas.width = width;
+    imageData = preCtx.createImageData(width, height);
     generate();
     drawWorld();
     draw();
@@ -78,12 +89,45 @@ function reset() {
 function updateCanvasSize() {
     canvas.height = document.documentElement.clientHeight;
     canvas.width = document.documentElement.clientWidth;
+    draw();
 }
-function startDragging() {
-    document.body.classList.add("dragging");
+function allowPanning() {
+    document.body.classList.add("canDrag");
+    canPan = true;
 }
-function stopDragging() {
+function disallowPanning() {
+    document.body.classList.remove("canDrag");
+    canPan = false;
+}
+function startPanning() {
+    isPanning = canPan;
+    if (isPanning)
+        document.body.classList.add("dragging");
+}
+function stopPanning() {
     document.body.classList.remove("dragging");
+    isPanning = false;
+}
+function pan(deltaX, deltaY) {
+    camera.x += deltaX;
+    camera.y += deltaY;
+    draw();
+}
+function handleMouseDown() {
+    startPanning();
+}
+function handleMouseUp() {
+    stopPanning();
+}
+function handleMouseMove(evt) {
+    if (lastPos.x === undefined || lastPos.y === undefined) {
+        lastPos.x = evt.x;
+        lastPos.y = evt.y;
+    }
+    if (isPanning)
+        pan(evt.x - lastPos.x, evt.y - lastPos.y);
+    lastPos.x = evt.x;
+    lastPos.y = evt.y;
 }
 updateCanvasSize();
 camera.x = canvas.width / 2;
@@ -92,14 +136,15 @@ reset();
 setInterval(function () {
     temperatureTick();
     drawWorld();
-}, 100);
-setInterval(function () {
     draw();
-}, 1000 / 30);
+}, 100);
 btnReset.addEventListener("click", reset);
 window.addEventListener("resize", updateCanvasSize);
 window.addEventListener("keydown", function (evt) { if (evt.key === " ")
-    startDragging(); });
+    allowPanning(); });
 window.addEventListener("keyup", function (evt) { if (evt.key === " ")
-    stopDragging(); });
+    disallowPanning(); });
+canvas.addEventListener("mousedown", handleMouseDown);
+canvas.addEventListener("mouseup", handleMouseUp);
+canvas.addEventListener("mousemove", handleMouseMove);
 //# sourceMappingURL=thermo.js.map

@@ -3,6 +3,10 @@ canvas {
 	z-index: -1;
 }
 
-.dragging {
+.canDrag {
 	cursor: grab;
+}
+
+.dragging {
+	cursor: grabbing;
 }

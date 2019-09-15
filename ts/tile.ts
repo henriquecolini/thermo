@@ -1,8 +1,9 @@
-function temperatureColor(temperature: number): string {
+function temperatureColor(temperature: number): {R: number, G: number, B: number} {
 	const L = 2;
 	const K = 0.002;
 	let factor = temperature > 0 ? (L/(1+(Math.E**(-K*(temperature)))))-L/2 : 0;
-	return "#"+(lerpColor(0x33224d, 0xfabb3e, factor).toString(16));
+	let lerped = lerpColor(0x33224d, 0xfabb3e, factor);
+	return {R: lerped >> 16, G: lerped >> 8 & 0xff, B: lerped & 0xff};
 }
 
 function lerpColor(a: number, b: number, amount: number): number {
@@ -37,7 +38,7 @@ class Tile {
 		this.y = y;
 	}
 
-	public getColor(): string {
+	public getColor(): {R: number, G: number, B: number} {
 		return temperatureColor(this.temperature);
 	}
 
