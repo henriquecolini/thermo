@@ -5,8 +5,8 @@ const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const labelTemperature = document.getElementById("labelTemperature") as HTMLElement;
 const ctx = canvas.getContext("2d");
 
-const tileWitdh = 16;
-const tileHeight = 16;
+const tileWitdh = 8;
+const tileHeight = 8;
 
 let witdh = 1;
 let height = 1;

@@ -4,9 +4,8 @@
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "sourceMap": true
-    },
-    "files": [
-        "thermo.ts"
-    ]
+		"sourceMap": true,
+		"rootDir": "./ts",
+		"outDir": "./js"
+    }
 }
