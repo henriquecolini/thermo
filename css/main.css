@@ -1,0 +1,139 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: "";
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+*, label {
+  box-sizing: border-box;
+  font-family: "Lexend Deca", "Montserrat", sans-serif;
+}
+
+body {
+  background: #272727;
+}
+
+canvas {
+  position: fixed;
+  z-index: -1;
+}
+canvas.canDrag {
+  cursor: grab;
+}
+canvas.dragging {
+  cursor: grabbing;
+}
+
+.sidebar {
+  height: 100%;
+  width: 400px;
+  transform: translateX(-100%);
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #1b1b1b;
+  overflow-x: hidden;
+  padding: 20px 20px;
+  transition: 0.5s;
+  color: white;
+  border-right: 1px solid #111;
+}
+.sidebar.open {
+  transform: translateX(0);
+}
+.sidebar label, .sidebar button, .sidebar input {
+  display: block;
+  font-size: 20px;
+}
+.sidebar label {
+  color: #aaa;
+  margin-bottom: 10px;
+}
+.sidebar button, .sidebar input {
+  margin-bottom: 20px;
+  width: 100%;
+  outline: none;
+  padding: 4px;
+  border: none;
+}
+.sidebar input {
+  color: white;
+  background: transparent;
+  border-bottom: 2px solid #555;
+}
+.sidebar button {
+  color: #000;
+  background: #ffb406;
+  padding: 10px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: box-shadow 0.5s;
+  user-select: none;
+}
+.sidebar button:hover {
+  box-shadow: 6px 0 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+#btnOpen, #btnClose {
+  cursor: pointer;
+}
+
+#btnOpen {
+  margin: 20px;
+  color: white;
+}
+
+#btnClose {
+  margin-bottom: 20px;
+}
+
+/*# sourceMappingURL=main.css.map */
