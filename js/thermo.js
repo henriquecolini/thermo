@@ -94,20 +94,20 @@ function updateCanvasSize() {
     draw();
 }
 function allowPanning() {
-    document.body.classList.add("canDrag");
+    canvas.classList.add("canDrag");
     canPan = true;
 }
 function disallowPanning() {
-    document.body.classList.remove("canDrag");
+    canvas.classList.remove("canDrag");
     canPan = false;
 }
 function startPanning() {
     isPanning = canPan;
     if (isPanning)
-        document.body.classList.add("dragging");
+        canvas.classList.add("dragging");
 }
 function stopPanning() {
-    document.body.classList.remove("dragging");
+    canvas.classList.remove("dragging");
     isPanning = false;
 }
 function pan(deltaX, deltaY) {
