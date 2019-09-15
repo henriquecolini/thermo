@@ -74,6 +74,8 @@ function drawWorld() {
 function draw() {
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.shadowColor = "rgba(0,0,0,0.1)";
+    ctx.shadowBlur = 10;
     ctx.drawImage(preCanvas, camera.x - (tileWidth * camera.zoom * (width / 2)), camera.y - (tileHeight * camera.zoom * (height / 2)), tileWidth * width * camera.zoom, tileHeight * height * camera.zoom);
 }
 function reset() {
@@ -156,6 +158,10 @@ setInterval(function () {
     draw();
 }, 100);
 btnReset.addEventListener("click", reset);
+txtHeight.addEventListener("keydown", function (evt) { if (evt.key === "Enter")
+    reset(); });
+txtWidth.addEventListener("keydown", function (evt) { if (evt.key === "Enter")
+    reset(); });
 window.addEventListener("resize", updateCanvasSize);
 window.addEventListener("keydown", function (evt) { if (evt.key === " ")
     allowPanning(); });

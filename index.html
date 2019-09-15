@@ -4,19 +4,24 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<script src="https://kit.fontawesome.com/73cfe82b74.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="css/reset.css">
 		<link rel="stylesheet" href="css/style.css">
-		<title>	</title>
+		<title>Thermo</title>
 	</head>
 	<body>
-		<canvas id="canvas"></canvas>
-		<header>
+		<canvas id="canvas"></canvas>		
+		<i id="btnOpen" class="fas fa-bars fa-2x"></i>
+		<div class="sidebar" id="sidebar">
+			<i id="btnClose" class="fas fa-arrow-left fa-2x"></i>
 			<label for="txtWidth">Width</label>
 			<input type="number" name="txtWidth" id="txtWidth" step="1" min="1" value="80">
 			<label for="txtHeight">Height</label>
 			<input type="number" name="txtHeight" id="txtHeight" step="1" min="1" value="60">
-			<button id="btnReset">Reset</button>
-		</header>
+			<button id="btnReset" tabIndex="-1">Reset</button>
+		</div>
+		<script src="js/sidebar.js"></script>
 		<script src="js/tile.js"></script>
 		<script src="js/thermo.js"></script>
 	</body>

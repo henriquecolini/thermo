@@ -1,3 +1,12 @@
+*, label {
+	box-sizing: border-box;
+	font-family: 'Lexend Deca', 'Montserrat', sans-serif;
+}
+
+body {
+	background: #272727;
+}
+
 canvas {
 	position: fixed;
 	z-index: -1;
@@ -9,4 +18,75 @@ canvas {
 
 .dragging {
 	cursor: grabbing;
+}
+
+.sidebar {
+	height: 100%; 
+	width: 400px; 
+	transform: translateX(-100%);
+	position: fixed; 
+	z-index: 1;
+	top: 0;
+	left: 0;
+	background-color: #1b1b1b;
+	overflow-x: hidden;
+	padding: 20px 20px;
+	transition: 0.5s;
+	color: white;
+	border-right: 1px solid #111;
+}
+
+.sidebar.open {
+	transform: translateX(0);
+}
+
+#btnOpen, #btnClose {
+	cursor: pointer;
+}
+
+#btnOpen {
+	margin: 20px;
+	color: white;
+}
+
+#btnClose {
+	margin-bottom: 20px;
+}
+
+.sidebar label, .sidebar button, .sidebar input {
+	display: block;
+	font-size: 20px;
+}
+
+.sidebar label {
+	color: #aaa;	
+	margin-bottom: 10px;
+}
+
+.sidebar button, .sidebar input {	
+	margin-bottom: 20px;
+	width: 100%;
+	outline: none;
+	padding: 4px;
+	border: none;
+}
+
+.sidebar input {
+	color: white;
+	background: transparent;
+	border-bottom: 2px solid #555;
+}
+
+.sidebar button {
+	color: #000;
+	background: #ffb406;
+	padding: 10px;
+	border-radius: 30px;
+	cursor: pointer;
+	transition: box-shadow 0.5s;
+	user-select: none;
+}
+
+.sidebar button:hover {
+	box-shadow: 6px 0 10px 0 rgba(0,0,0,0.5);
 }

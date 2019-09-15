@@ -110,6 +110,8 @@ function draw() {
 	
 	ctx.imageSmoothingEnabled = false;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.shadowColor = "rgba(0,0,0,0.1)";
+	ctx.shadowBlur = 10;
 	ctx.drawImage(
 		preCanvas,
 		camera.x-(tileWidth*camera.zoom*(width/2)),
@@ -246,6 +248,8 @@ setInterval(() => {
 }, 100);
 
 btnReset.addEventListener("click", reset);
+txtHeight.addEventListener("keydown", (evt) => { if(evt.key === "Enter") reset() });
+txtWidth.addEventListener("keydown", (evt) => { if(evt.key === "Enter") reset() });
 window.addEventListener("resize", updateCanvasSize);
 window.addEventListener("keydown", (evt) => { if(evt.key === " ") allowPanning() });
 window.addEventListener("keyup", (evt) => { if(evt.key === " ") disallowPanning() });
