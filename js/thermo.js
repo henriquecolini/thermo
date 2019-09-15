@@ -2,14 +2,11 @@ var txtWidth = document.getElementById("txtWidth");
 var txtHeight = document.getElementById("txtHeight");
 var btnReset = document.getElementById("btnReset");
 var canvas = document.getElementById("canvas");
-var labelTemperature = document.getElementById("labelTemperature");
 var ctx = canvas.getContext("2d");
-var tileWitdh = 8;
-var tileHeight = 8;
+var tileWitdh = 12;
+var tileHeight = 12;
 var witdh = 1;
 var height = 1;
-var wArray = [0];
-var hArray = [0];
 function temperatureColor(temperature) {
     var L = 2;
     var K = 0.002;
@@ -28,16 +25,18 @@ function shuffle(array) {
     }
 }
 var Tile = (function () {
-    function Tile(density, temperature, conductivity) {
+    function Tile(density, temperature, conductivity, x, y) {
         this.baseDensity = density;
         this.temperature = temperature;
         this.conductivity = conductivity;
+        this.x = x;
+        this.y = y;
     }
     Tile.prototype.getColor = function () {
         return temperatureColor(this.temperature);
     };
     Tile.prototype.clone = function () {
-        return new Tile(this.baseDensity, this.temperature, this.conductivity);
+        return new Tile(this.baseDensity, this.temperature, this.conductivity, this.x, this.y);
     };
     return Tile;
 }());
@@ -47,58 +46,43 @@ function generate() {
     for (var x = 0; x < witdh; x++) {
         world[x] = [];
         for (var y = 0; y < height; y++) {
-            world[x][y] = new Tile(0.1, (Math.random() * 600), 0.008);
+            world[x][y] = new Tile(0.1, (Math.random() * 600), 0.02, x, y);
         }
     }
 }
-function tick() {
-    var heatMap = [];
-    var totalTemperature = 0;
-    for (var x = 0; x < witdh; x++) {
-        heatMap[x] = [];
-        for (var y = 0; y < height; y++) {
-            heatMap[x][y] = world[x][y].temperature;
-        }
-    }
-    shuffle(wArray);
-    shuffle(hArray);
-    for (var iX = 0; iX < wArray.length; iX++) {
-        for (var iY = 0; iY < hArray.length; iY++) {
-            var x = wArray[iX];
-            var y = hArray[iY];
-            var directions = [];
-            if (y > 0)
-                directions.push({ heat: heatMap[x][y - 1], tile: world[x][y - 1], xOff: 0, yOff: -1 });
-            if (y < height - 1)
-                directions.push({ heat: heatMap[x][y + 1], tile: world[x][y + 1], xOff: 0, yOff: +1 });
-            if (x > 0)
-                directions.push({ heat: heatMap[x - 1][y], tile: world[x - 1][y], xOff: -1, yOff: 0 });
-            if (x < witdh - 1)
-                directions.push({ heat: heatMap[x + 1][y], tile: world[x + 1][y], xOff: +1, yOff: 0 });
-            shuffle(directions);
-            for (var i = 0; i < directions.length; i++) {
-                var dir = directions[i];
-                var totalConductivity = dir.tile.conductivity + world[x][y].conductivity;
-                var factor = ((totalConductivity / 2) + Math.min(dir.tile.conductivity, world[x][y].conductivity)) / 2;
-                var transferred = factor * (Math.abs(dir.heat - heatMap[x][y]));
-                if (heatMap[x][y] > dir.heat) {
-                    heatMap[x][y] -= transferred;
-                    heatMap[x + dir.xOff][y + dir.yOff] += transferred;
-                }
-                else {
-                    heatMap[x][y] += transferred;
-                    heatMap[x + dir.xOff][y + dir.yOff] -= transferred;
-                }
-            }
-        }
-    }
+function temperatureTick() {
+    var arr = [];
     for (var x = 0; x < witdh; x++) {
         for (var y = 0; y < height; y++) {
-            world[x][y].temperature = heatMap[x][y];
-            totalTemperature += world[x][y].temperature;
+            arr.push(world[x][y]);
         }
     }
-    labelTemperature.innerHTML = "Average Temperature = " + (totalTemperature / (witdh * height)).toFixed(4) + " K";
+    arr.sort(function (a, b) {
+        return a.temperature - b.temperature;
+    });
+    for (var i = 0; i < arr.length; i++) {
+        var t = arr[i];
+        var x = t.x;
+        var y = t.y;
+        var directions = [];
+        if (y > 0 && t.temperature > world[x][y - 1].temperature)
+            directions.push({ tile: world[x][y - 1], xOff: 0, yOff: -1 });
+        if (y < height - 1 && t.temperature > world[x][y + 1].temperature)
+            directions.push({ tile: world[x][y + 1], xOff: 0, yOff: +1 });
+        if (x > 0 && t.temperature > world[x - 1][y].temperature)
+            directions.push({ tile: world[x - 1][y], xOff: -1, yOff: 0 });
+        if (x < witdh - 1 && t.temperature > world[x + 1][y].temperature)
+            directions.push({ tile: world[x + 1][y], xOff: +1, yOff: 0 });
+        var originalTemp = t.temperature;
+        var sharedTemp = (t.temperature * t.conductivity) / (directions.length + 1);
+        for (var i_1 = 0; i_1 < directions.length; i_1++) {
+            var dir = directions[i_1];
+            var diff = originalTemp - dir.tile.temperature;
+            var gained = sharedTemp * (diff / originalTemp);
+            dir.tile.temperature += gained;
+            t.temperature -= gained;
+        }
+    }
 }
 function draw() {
     for (var x = 0; x < witdh; x++) {
@@ -111,12 +95,6 @@ function draw() {
 function reset() {
     witdh = Number(txtWidth.value.trim());
     height = Number(txtHeight.value.trim());
-    wArray = [];
-    hArray = [];
-    for (var i = 0; i < witdh; i++)
-        wArray[i] = i;
-    for (var i = 0; i < height; i++)
-        hArray[i] = i;
     canvas.height = tileHeight * height;
     canvas.width = tileWitdh * witdh;
     generate();
@@ -125,7 +103,7 @@ function reset() {
 btnReset.addEventListener("click", reset);
 reset();
 setInterval(function () {
-    tick();
+    temperatureTick();
     draw();
 }, 100);
 //# sourceMappingURL=thermo.js.map

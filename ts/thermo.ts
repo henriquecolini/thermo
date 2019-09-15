@@ -2,17 +2,13 @@ const txtWidth = document.getElementById("txtWidth") as HTMLInputElement;
 const txtHeight = document.getElementById("txtHeight") as HTMLInputElement;
 const btnReset = document.getElementById("btnReset") as HTMLButtonElement;
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-const labelTemperature = document.getElementById("labelTemperature") as HTMLElement;
 const ctx = canvas.getContext("2d");
 
-const tileWitdh = 8;
-const tileHeight = 8;
+const tileWitdh = 12;
+const tileHeight = 12;
 
 let witdh = 1;
 let height = 1;
-
-let wArray = [0];
-let hArray = [0];
 
 function temperatureColor(temperature: number): string {
 	const L = 2;
@@ -49,11 +45,15 @@ class Tile {
 	public baseDensity: number;
 	public temperature: number;
 	public conductivity: number;
+	public x: number;
+	public y: number;
 	
-	constructor(density: number, temperature: number, conductivity: number) {
+	constructor(density: number, temperature: number, conductivity: number, x: number, y: number) {
 		this.baseDensity = density;
 		this.temperature = temperature;
 		this.conductivity = conductivity;
+		this.x = x;
+		this.y = y;
 	}
 
 	public getColor(): string {
@@ -61,7 +61,7 @@ class Tile {
 	}
 
 	public clone(): Tile {
-		return new Tile(this.baseDensity, this.temperature, this.conductivity);
+		return new Tile(this.baseDensity, this.temperature, this.conductivity, this.x, this.y);
 	}
 	
 }
@@ -75,71 +75,50 @@ function generate() {
 	for (let x=0; x<witdh; x++) {
 		world[x] = [];
 		for (let y=0; y<height;y++){
-			world[x][y] = new Tile(0.1,(Math.random() * 600), 0.008);
+			world[x][y] = new Tile(0.1,(Math.random() * 600), 0.02, x, y);
 		}
 	}
 
 }
 
-function tick() {
+function temperatureTick() {
 
-	const heatMap: number[][] = [];
-	let totalTemperature = 0;
+	let arr: Tile[] = [];
 
 	for (let x=0; x<witdh; x++) {
-		heatMap[x] = [];
 		for (let y=0; y<height;y++){			
-			heatMap[x][y] = world[x][y].temperature;
+			arr.push(world[x][y]);
 		}
 	}
 
-	shuffle(wArray);
-	shuffle(hArray);
+	arr.sort((a,b)=>{
+		return a.temperature-b.temperature;
+	});
 
-	for (let iX=0; iX<wArray.length; iX++) {
-		for (let iY=0; iY<hArray.length;iY++){
+	for (let i = 0; i < arr.length; i++) {
 
-			const x = wArray[iX];
-			const y = hArray[iY];
-			
-			const directions: {heat: number, tile: Tile, xOff: number, yOff: number}[] = [];
-		
-			if(y > 0)        directions.push({heat: heatMap[x][y-1], tile: world[x][y-1], xOff: 0, yOff: -1});
-			if(y < height-1) directions.push({heat: heatMap[x][y+1], tile: world[x][y+1], xOff: 0, yOff: +1});
-			if(x > 0)        directions.push({heat: heatMap[x-1][y], tile: world[x-1][y], xOff: -1, yOff: 0});
-			if(x < witdh-1)  directions.push({heat: heatMap[x+1][y], tile: world[x+1][y], xOff: +1, yOff: 0});
+		const t = arr[i];
+		const x = t.x;
+		const y = t.y;
+		let directions: {tile: Tile, xOff: number, yOff: number}[] = [];
 
-			shuffle(directions);
+		if(y > 0        && t.temperature > world[x][y-1].temperature) directions.push({tile: world[x][y-1], xOff: 0, yOff: -1});
+		if(y < height-1 && t.temperature > world[x][y+1].temperature) directions.push({tile: world[x][y+1], xOff: 0, yOff: +1});
+		if(x > 0        && t.temperature > world[x-1][y].temperature) directions.push({tile: world[x-1][y], xOff: -1, yOff: 0});
+		if(x < witdh-1  && t.temperature > world[x+1][y].temperature) directions.push({tile: world[x+1][y], xOff: +1, yOff: 0});
 
-			for (let i = 0; i < directions.length; i++) {
+		let originalTemp = t.temperature;
+		let sharedTemp = (t.temperature * t.conductivity)/(directions.length+1);
 
-				const dir = directions[i];			
-				const totalConductivity = dir.tile.conductivity + world[x][y].conductivity;
-				const factor = ((totalConductivity/2) + Math.min(dir.tile.conductivity, world[x][y].conductivity))/2;
-				const transferred = factor * (Math.abs(dir.heat - heatMap[x][y]));
-
-				if (heatMap[x][y] > dir.heat) {
-					heatMap[x][y] -= transferred;
-					heatMap[x+dir.xOff][y+dir.yOff] += transferred;
-				}
-				else {
-					heatMap[x][y] += transferred;
-					heatMap[x+dir.xOff][y+dir.yOff] -= transferred;
-				}
-
-			}
-
+		for (let i = 0; i < directions.length; i++) {
+			const dir = directions[i];
+			let diff = originalTemp - dir.tile.temperature;
+			let gained = sharedTemp * (diff/originalTemp);
+			dir.tile.temperature += gained;
+			t.temperature -= gained;
 		}
-	}
 
-	for (let x=0; x<witdh; x++) {
-		for (let y=0; y<height;y++){
-			world[x][y].temperature = heatMap[x][y];
-			totalTemperature += world[x][y].temperature;
-		}
 	}
-
-	labelTemperature.innerHTML = "Average Temperature = " + (totalTemperature/(witdh*height)).toFixed(4) + " K";
 
 }
 
@@ -155,20 +134,16 @@ function draw() {
 }
 
 function reset() {
+
 	witdh = Number(txtWidth.value.trim());
 	height = Number(txtHeight.value.trim());
-
-	wArray = [];
-	hArray = [];
-
-	for (let i = 0; i < witdh; i++) wArray[i] = i;
-	for (let i = 0; i < height; i++) hArray[i] = i;
 
 	canvas.height = tileHeight * height;
 	canvas.width = tileWitdh * witdh;
 
 	generate();
 	draw();
+
 }
 
 btnReset.addEventListener("click", reset);
@@ -176,6 +151,6 @@ btnReset.addEventListener("click", reset);
 reset();
 
 setInterval(() => {
-	tick();
+	temperatureTick();
 	draw();
 }, 100);
