@@ -1,0 +1,8 @@
+canvas {
+	position: fixed;
+	z-index: -1;
+}
+
+.dragging {
+	cursor: grab;
+}

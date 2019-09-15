@@ -5,7 +5,7 @@
         "removeComments": true,
         "preserveConstEnums": true,
 		"sourceMap": true,
-		"rootDir": "./ts",
 		"outDir": "./js"
-    }
+	},
+	"include": ["ts/**/*"]
 }

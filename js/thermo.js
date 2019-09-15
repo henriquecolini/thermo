@@ -3,44 +3,14 @@ var txtHeight = document.getElementById("txtHeight");
 var btnReset = document.getElementById("btnReset");
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
+var preCanvas = document.createElement("canvas");
+var preCtx = preCanvas.getContext("2d");
 var tileWitdh = 12;
 var tileHeight = 12;
 var witdh = 1;
 var height = 1;
-function temperatureColor(temperature) {
-    var L = 2;
-    var K = 0.002;
-    var factor = temperature > 0 ? (L / (1 + (Math.pow(Math.E, (-K * (temperature)))))) - L / 2 : 0;
-    return "#" + (lerpColor(0x33224d, 0xfabb3e, factor).toString(16));
-}
-function lerpColor(a, b, amount) {
-    var ar = a >> 16, ag = a >> 8 & 0xff, ab = a & 0xff, br = b >> 16, bg = b >> 8 & 0xff, bb = b & 0xff, rr = ar + amount * (br - ar), rg = ag + amount * (bg - ag), rb = ab + amount * (bb - ab);
-    return (rr << 16) + (rg << 8) + (rb | 0);
-}
-function shuffle(array) {
-    var _a;
-    for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        _a = [array[j], array[i]], array[i] = _a[0], array[j] = _a[1];
-    }
-}
-var Tile = (function () {
-    function Tile(density, temperature, conductivity, x, y) {
-        this.baseDensity = density;
-        this.temperature = temperature;
-        this.conductivity = conductivity;
-        this.x = x;
-        this.y = y;
-    }
-    Tile.prototype.getColor = function () {
-        return temperatureColor(this.temperature);
-    };
-    Tile.prototype.clone = function () {
-        return new Tile(this.baseDensity, this.temperature, this.conductivity, this.x, this.y);
-    };
-    return Tile;
-}());
 var world;
+var camera = { x: 0, y: 0, zoom: 1 };
 function generate() {
     world = [];
     for (var x = 0; x < witdh; x++) {
@@ -84,26 +54,52 @@ function temperatureTick() {
         }
     }
 }
-function draw() {
+function drawWorld() {
     for (var x = 0; x < witdh; x++) {
         for (var y = 0; y < height; y++) {
-            ctx.fillStyle = world[x][y].getColor();
-            ctx.fillRect(x * tileWitdh, y * tileHeight, tileWitdh, tileHeight);
+            preCtx.fillStyle = world[x][y].getColor();
+            preCtx.fillRect(x * tileWitdh, y * tileHeight, tileWitdh, tileHeight);
         }
     }
+}
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(preCanvas, camera.x - (preCanvas.width / 2), camera.y - (preCanvas.height / 2));
 }
 function reset() {
     witdh = Number(txtWidth.value.trim());
     height = Number(txtHeight.value.trim());
-    canvas.height = tileHeight * height;
-    canvas.width = tileWitdh * witdh;
+    preCanvas.height = tileHeight * height;
+    preCanvas.width = tileWitdh * witdh;
     generate();
+    drawWorld();
     draw();
 }
-btnReset.addEventListener("click", reset);
+function updateCanvasSize() {
+    canvas.height = document.documentElement.clientHeight;
+    canvas.width = document.documentElement.clientWidth;
+}
+function startDragging() {
+    document.body.classList.add("dragging");
+}
+function stopDragging() {
+    document.body.classList.remove("dragging");
+}
+updateCanvasSize();
+camera.x = canvas.width / 2;
+camera.y = canvas.height / 2;
 reset();
 setInterval(function () {
     temperatureTick();
-    draw();
+    drawWorld();
 }, 100);
+setInterval(function () {
+    draw();
+}, 1000 / 30);
+btnReset.addEventListener("click", reset);
+window.addEventListener("resize", updateCanvasSize);
+window.addEventListener("keydown", function (evt) { if (evt.key === " ")
+    startDragging(); });
+window.addEventListener("keyup", function (evt) { if (evt.key === " ")
+    stopDragging(); });
 //# sourceMappingURL=thermo.js.map
