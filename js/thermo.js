@@ -1,6 +1,7 @@
 var txtWidth = document.getElementById("txtWidth");
 var txtHeight = document.getElementById("txtHeight");
 var btnReset = document.getElementById("btnReset");
+var toggleThermal = document.getElementById("toggleThermal");
 var canvas = document.getElementById("canvas");
 var tileDefs = new TileDefManager();
 var world = new World();
@@ -8,16 +9,17 @@ var ctx = canvas.getContext("2d");
 var preCanvas = document.createElement("canvas");
 var preCtx = preCanvas.getContext("2d");
 var imageData = preCtx.createImageData(1, 1);
-var tileWidth = 12;
-var tileHeight = 12;
+var tileWidth = 10;
+var tileHeight = 10;
 var canPan = false;
 var isPanning = false;
 var lastPos = { x: undefined, y: undefined };
 var camera = { x: 0, y: 0, zoom: 1 };
+var thermalView = false;
 function drawWorld() {
     for (var x = 0; x < world.getWidth(); x++) {
         for (var y = 0; y < world.getHeight(); y++) {
-            var c = world.getTile(x, y).getColor();
+            var c = thermalView ? world.getTile(x, y).getThermalColor() : world.getTile(x, y).def.color;
             var pI = ((y * world.getWidth()) + x) * 4;
             imageData.data[pI] = c.R;
             imageData.data[pI + 1] = c.G;
@@ -121,6 +123,7 @@ camera.y = canvas.height / 2;
 loadDefs(function (success, data) {
     if (success) {
         tileDefs.loadJSON(data);
+        console.log("Successfully loaded tile definitions.");
         console.log(tileDefs.defs);
         resetWorld();
         setInterval(function () {
@@ -129,12 +132,16 @@ loadDefs(function (success, data) {
             draw();
         }, 100);
     }
+    else {
+        console.error("Failed loading tile definitions!");
+    }
 });
 btnReset.addEventListener("click", resetWorld);
 txtHeight.addEventListener("keydown", function (evt) { if (evt.key === "Enter")
     resetWorld(); });
 txtWidth.addEventListener("keydown", function (evt) { if (evt.key === "Enter")
     resetWorld(); });
+toggleThermal.addEventListener("click", function (evt) { thermalView = !thermalView; });
 window.addEventListener("resize", updateCanvasSize);
 window.addEventListener("keydown", function (evt) { if (evt.key === " ")
     allowPanning(); });

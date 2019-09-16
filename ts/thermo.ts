@@ -3,6 +3,7 @@
 const txtWidth = document.getElementById("txtWidth") as HTMLInputElement;
 const txtHeight = document.getElementById("txtHeight") as HTMLInputElement;
 const btnReset = document.getElementById("btnReset") as HTMLButtonElement;
+const toggleThermal = document.getElementById("toggleThermal") as HTMLButtonElement;
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
 // Engine
@@ -19,8 +20,8 @@ let imageData = preCtx.createImageData(1, 1);
 
 // Base tile size
 
-const tileWidth = 12;
-const tileHeight = 12;
+const tileWidth = 10;
+const tileHeight = 10;
 
 // Camera
 
@@ -29,12 +30,16 @@ let isPanning = false;
 let lastPos = {x: undefined as number, y: undefined as number};
 let camera = {x: 0, y: 0, zoom: 1};
 
+// Rendering
+
+let thermalView = false;
+
 // Renders world to off-screen canvas
 
 function drawWorld() {
 	for (let x=0; x<world.getWidth(); x++) {
 		for (let y=0; y<world.getHeight();y++){
-			let c = world.getTile(x,y).getColor();
+			let c = thermalView ? world.getTile(x,y).getThermalColor() : world.getTile(x,y).def.color;
 			let pI = ((y*world.getWidth())+x) * 4;
 			imageData.data[pI]   = c.R;
 			imageData.data[pI+1] = c.G;
@@ -200,7 +205,10 @@ camera.y = canvas.height/2;
 loadDefs((success, data) => {
 
 	if (success) {
+
 		tileDefs.loadJSON(data);
+
+		console.log("Successfully loaded tile definitions.");
 		console.log(tileDefs.defs);
 		
 		resetWorld();
@@ -210,12 +218,16 @@ loadDefs((success, data) => {
 			draw();
 		}, 100);
 	}
+	else {
+		console.error("Failed loading tile definitions!");		
+	}
 
 });
 
 btnReset.addEventListener("click", resetWorld);
 txtHeight.addEventListener("keydown", (evt) => { if(evt.key === "Enter") resetWorld() });
 txtWidth.addEventListener("keydown", (evt) => { if(evt.key === "Enter") resetWorld() });
+toggleThermal.addEventListener("click", (evt) => { thermalView = !thermalView });
 window.addEventListener("resize", updateCanvasSize);
 window.addEventListener("keydown", (evt) => { if(evt.key === " ") allowPanning() });
 window.addEventListener("keyup", (evt) => { if(evt.key === " ") disallowPanning() });

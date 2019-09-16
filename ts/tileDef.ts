@@ -1,7 +1,7 @@
 interface TileDef {
 	name: string,
 	id: string,
-	color: string,
+	color: Color,
 	density: number,
 	baseTemperature: number,
 	conductivity: number,
@@ -23,8 +23,8 @@ class TileDefManager {
 
 	public defs: TileDef[];
 	private static defaultDefs: TileDef[] = [
-		{name: "Air", id:"air", color: "cfcfcf", density: 1, baseTemperature: 293, conductivity: 0.3, viscosity: 0},
-		{name: "Wall", id:"wall", color: "5c5955", density: Infinity, baseTemperature: 293, conductivity: 0, static: true}
+		{name: "Air", id:"air", color: color(0xcfcfcf), density: 1, baseTemperature: 293, conductivity: 0.1, viscosity: 0},
+		{name: "Wall", id:"wall", color: color(0x5c5955), density: Infinity, baseTemperature: 293, conductivity: 0, static: true}
 	];
 
 	constructor() {
@@ -32,7 +32,13 @@ class TileDefManager {
 	}
 
 	public loadJSON(json: string) {
-		this.defs = JSON.parse(json) as TileDef[];
+		let jsonDefs = JSON.parse(json) as any[];
+		this.defs = [];
+		for (let i = 0; i < jsonDefs.length; i++) {
+			const jdef = jsonDefs[i];
+			jdef.color = color(jdef.color);
+			this.defs.push(jdef);
+		}
 		for (let i = 0; i < TileDefManager.defaultDefs.length; i++) {
 			const def = TileDefManager.defaultDefs[i];
 			if (!this.getById(def.id)) {

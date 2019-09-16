@@ -90,7 +90,7 @@ canvas.dragging {
 .sidebar.open {
   transform: translateX(0);
 }
-.sidebar label, .sidebar button, .sidebar input {
+.sidebar label, .sidebar button, .sidebar input[type=text], .sidebar input[type=number] {
   display: block;
   font-size: 20px;
 }
@@ -98,14 +98,14 @@ canvas.dragging {
   color: #aaa;
   margin-bottom: 10px;
 }
-.sidebar button, .sidebar input {
+.sidebar button, .sidebar input[type=text], .sidebar input[type=number] {
   margin-bottom: 20px;
   width: 100%;
   outline: none;
   padding: 4px;
   border: none;
 }
-.sidebar input {
+.sidebar input[type=text], .sidebar input[type=number] {
   color: white;
   background: transparent;
   border-bottom: 2px solid #555;
@@ -121,6 +121,15 @@ canvas.dragging {
 }
 .sidebar button:hover {
   box-shadow: 6px 0 10px 0 rgba(0, 0, 0, 0.5);
+}
+.sidebar button .fas {
+  display: inline;
+}
+.sidebar .spacer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 #btnOpen, #btnClose {

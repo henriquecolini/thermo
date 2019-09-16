@@ -43,7 +43,7 @@ canvas {
 		transform: translateX(0);
 	}
 
-	label, button, input {
+	label, button, input[type=text], input[type=number] {
 
 		display: block;
 		font-size: 20px;
@@ -57,7 +57,7 @@ canvas {
 
 	}
 	
-	button, input {	
+	button, input[type=text], input[type=number] {	
 		margin-bottom: 20px;
 		width: 100%;
 		outline: none;
@@ -65,7 +65,7 @@ canvas {
 		border: none;
 	}
 	
-	input {
+	input[type=text], input[type=number] {
 
 		color: white;
 		background: transparent;
@@ -87,6 +87,17 @@ canvas {
 			box-shadow: 6px 0 10px 0 rgba(0,0,0,0.5);
 		}
 
+		.fas {
+			display: inline;
+		}
+
+	}
+
+	.spacer {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		height: 100%;
 	}
 
 }

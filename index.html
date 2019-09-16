@@ -13,14 +13,22 @@
 		<canvas id="canvas"></canvas>		
 		<i id="btnOpen" class="fas fa-bars fa-2x"></i>
 		<div class="sidebar" id="sidebar">
-			<i id="btnClose" class="fas fa-arrow-left fa-2x"></i>
-			<label for="txtWidth">Width</label>
-			<input type="number" name="txtWidth" id="txtWidth" step="1" min="1" value="80">
-			<label for="txtHeight">Height</label>
-			<input type="number" name="txtHeight" id="txtHeight" step="1" min="1" value="60">
-			<button id="btnReset" tabIndex="-1">Reset</button>
+			<div class="spacer">
+				<div>
+					<i id="btnClose" class="fas fa-arrow-left fa-2x"></i>
+					<label for="txtWidth">Width</label>
+					<input type="number" name="txtWidth" id="txtWidth" step="1" min="1" value="120">
+					<label for="txtHeight">Height</label>
+					<input type="number" name="txtHeight" id="txtHeight" step="1" min="1" value="80">
+					<button id="btnReset" tabIndex="-1">Reset</button>
+				</div>
+				<div>
+					<button id="toggleThermal"><i id="btnClose" class="fas fa-eye"></i> Toggle Thermal Camera</button>
+				</div>
+			</div>
 		</div>
 		<script src="js/sidebar.js"></script>
+		<script src="js/color.js"></script>
 		<script src="js/tileDef.js"></script>
 		<script src="js/tile.js"></script>
 		<script src="js/world.js"></script>

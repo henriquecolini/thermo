@@ -5,7 +5,18 @@
 		"color": "765D47",
 		"density": 1500,
 		"baseTemperature": 293,
-		"conductivity": 0.02,
+		"conductivity": 0.04,
 		"viscosity": -1
+	},
+
+	{
+		"name": "Lava",
+		"id":"lava",
+		"color": "FF8700",
+		"density": 4000,
+		"baseTemperature": 1500,
+		"conductivity": 0.02,
+		"viscosity": 4,
+		"slippery": true
 	}
 ]
