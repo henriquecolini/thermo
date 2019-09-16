@@ -30,6 +30,11 @@ let isPanning = false;
 let lastPos = {x: undefined as number, y: undefined as number};
 let camera = {x: 0, y: 0, zoom: 1};
 
+// Controls
+
+let isMouseDown = false;
+let selectedDef = tileDefs.getById("wall");
+
 // Rendering
 
 let thermalView = false;
@@ -130,15 +135,42 @@ function pan(deltaX: number, deltaY: number) {
 	draw();
 }
 
+// Converts a mouse position in the canvas to tile coordinates
+
+function mouseToTileCoords(mouseX: number, mouseY: number): {x: number, y: number} {
+	let gridW = tileWidth*world.getWidth()*camera.zoom;
+	let gridH = tileHeight*world.getHeight()*camera.zoom;
+
+	let worldX = mouseX - camera.x;
+	let worldY = mouseY - camera.y;
+
+	if (worldX > -gridW/2 && worldX < gridW/2 &&
+		worldY > -gridH/2 && worldY < gridH/2) {
+		
+		let tileX = Math.floor(((worldX + gridW/2)/gridW)*world.getWidth());
+		let tileY = Math.floor(((worldY + gridH/2)/gridH)*world.getHeight());
+
+		return {
+			x: Math.floor(((worldX + gridW/2)/gridW)*world.getWidth()),
+			y: Math.floor(((worldY + gridH/2)/gridH)*world.getHeight())
+		};
+
+	}
+
+	return undefined;
+}
+
 // Handles onMouseDown event
 
 function handleMouseDown() {
+	isMouseDown = true;
 	startPanning();
 }
 
 // Handles onMouseUp event
 
 function handleMouseUp() {
+	isMouseDown = false;
 	stopPanning();
 }
 
@@ -152,6 +184,11 @@ function handleMouseMove(evt: MouseEvent) {
 
 	if (isPanning) pan(evt.x - lastPos.x, evt.y - lastPos.y);
 
+	if (isMouseDown && !isPanning) {
+		let {x,y} = mouseToTileCoords(evt.x, evt.y);
+		world.setTile(x,y,new Tile(selectedDef));
+	}
+	
 	lastPos.x = evt.x;
 	lastPos.y = evt.y;
 }

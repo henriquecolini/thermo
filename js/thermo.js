@@ -15,6 +15,8 @@ var canPan = false;
 var isPanning = false;
 var lastPos = { x: undefined, y: undefined };
 var camera = { x: 0, y: 0, zoom: 1 };
+var isMouseDown = false;
+var selectedDef = tileDefs.getById("wall");
 var thermalView = false;
 function drawWorld() {
     for (var x = 0; x < world.getWidth(); x++) {
@@ -73,10 +75,28 @@ function pan(deltaX, deltaY) {
     camera.y += deltaY;
     draw();
 }
+function mouseToTileCoords(mouseX, mouseY) {
+    var gridW = tileWidth * world.getWidth() * camera.zoom;
+    var gridH = tileHeight * world.getHeight() * camera.zoom;
+    var worldX = mouseX - camera.x;
+    var worldY = mouseY - camera.y;
+    if (worldX > -gridW / 2 && worldX < gridW / 2 &&
+        worldY > -gridH / 2 && worldY < gridH / 2) {
+        var tileX = Math.floor(((worldX + gridW / 2) / gridW) * world.getWidth());
+        var tileY = Math.floor(((worldY + gridH / 2) / gridH) * world.getHeight());
+        return {
+            x: Math.floor(((worldX + gridW / 2) / gridW) * world.getWidth()),
+            y: Math.floor(((worldY + gridH / 2) / gridH) * world.getHeight())
+        };
+    }
+    return undefined;
+}
 function handleMouseDown() {
+    isMouseDown = true;
     startPanning();
 }
 function handleMouseUp() {
+    isMouseDown = false;
     stopPanning();
 }
 function handleMouseMove(evt) {
@@ -86,6 +106,10 @@ function handleMouseMove(evt) {
     }
     if (isPanning)
         pan(evt.x - lastPos.x, evt.y - lastPos.y);
+    if (isMouseDown && !isPanning) {
+        var _a = mouseToTileCoords(evt.x, evt.y), x = _a.x, y = _a.y;
+        world.setTile(x, y, new Tile(selectedDef));
+    }
     lastPos.x = evt.x;
     lastPos.y = evt.y;
 }
