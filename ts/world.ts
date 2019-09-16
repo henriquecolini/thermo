@@ -81,17 +81,39 @@ class World {
 			for (let y = 0; y < this.height; y++) {
 								
 				const tile = world.getTile(x,y);
-				const up = world.getTile(x,y-1);
-				const down = world.getTile(x,y+1);
+				const top = world.getTile(x,y-1);
+				const bottom = world.getTile(x,y+1);
 				const left = world.getTile(x-1,y);
 				const right = world.getTile(x+1,y);
+				const bottomLeft = world.getTile(x-1,y+1);
+				const bottomRight = world.getTile(x+1,y+1);
 
 				if (!tile.justChanged) {
 					
 					if (!tile.def.static) {
-						if(down && tile.def.density > down.def.density && !down.def.static) {
+
+						// Law 1: If something with a lower density is below a tile, they will change places.
+
+						if(bottom && tile.canPenetrate(bottom)) {
 							this.swap(x,y,x,y+1);
 						}
+						
+						// Law 2: Slipperiness is defined by the probability that something will fall to a bottom diagonal.
+
+						else if(tile.def.slipperiness > 0) {
+							let canLeft = bottomLeft && tile.canPenetrate(left) && tile.canPenetrate(bottomLeft);
+							let canRight = bottomRight && tile.canPenetrate(right) && tile.canPenetrate(bottomRight);
+							if (canLeft || canRight) {
+								if (Math.random() <= tile.def.slipperiness) {
+									if (canLeft && canRight) {
+										this.swap(x,y,x + (Math.random() > 0.5 ? 1 : -1),y);
+									}
+									else if (canLeft) {this.swap(x,y,x-1,y);}
+									else {this.swap(x,y,x+1,y);}
+								}
+							}
+						}
+
 					}
 
 				}

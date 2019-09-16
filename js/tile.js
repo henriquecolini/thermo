@@ -21,6 +21,9 @@ var Tile = (function () {
     Tile.prototype.clone = function () {
         return new Tile(this.def);
     };
+    Tile.prototype.canPenetrate = function (other) {
+        return !other.def.static && this.def.density > other.def.density;
+    };
     return Tile;
 }());
 //# sourceMappingURL=tile.js.map

@@ -33,5 +33,9 @@ class Tile {
 	public clone(): Tile {
 		return new Tile(this.def);
 	}
+
+	public canPenetrate(other: Tile): boolean {
+		return !other.def.static && this.def.density > other.def.density;
+	}
 	
 }

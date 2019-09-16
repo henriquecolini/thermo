@@ -59,14 +59,33 @@ var World = (function () {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
                 var tile = world.getTile(x, y);
-                var up = world.getTile(x, y - 1);
-                var down = world.getTile(x, y + 1);
+                var top_1 = world.getTile(x, y - 1);
+                var bottom = world.getTile(x, y + 1);
                 var left = world.getTile(x - 1, y);
                 var right = world.getTile(x + 1, y);
+                var bottomLeft = world.getTile(x - 1, y + 1);
+                var bottomRight = world.getTile(x + 1, y + 1);
                 if (!tile.justChanged) {
                     if (!tile.def.static) {
-                        if (down && tile.def.density > down.def.density && !down.def.static) {
+                        if (bottom && tile.canPenetrate(bottom)) {
                             this.swap(x, y, x, y + 1);
+                        }
+                        else if (tile.def.slipperiness > 0) {
+                            var canLeft = bottomLeft && tile.canPenetrate(left) && tile.canPenetrate(bottomLeft);
+                            var canRight = bottomRight && tile.canPenetrate(right) && tile.canPenetrate(bottomRight);
+                            if (canLeft || canRight) {
+                                if (Math.random() <= tile.def.slipperiness) {
+                                    if (canLeft && canRight) {
+                                        this.swap(x, y, x + (Math.random() > 0.5 ? 1 : -1), y);
+                                    }
+                                    else if (canLeft) {
+                                        this.swap(x, y, x - 1, y);
+                                    }
+                                    else {
+                                        this.swap(x, y, x + 1, y);
+                                    }
+                                }
+                            }
                         }
                     }
                 }

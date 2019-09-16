@@ -11,6 +11,28 @@
 	},
 
 	{
+		"name": "Sand",
+		"id": "sand",
+		"color": "DCB161",
+		"density": 1200,
+		"baseTemperature": 293,
+		"conductivity": 0.005,
+		"viscosity": -1,
+		"slipperiness": 1
+	},
+
+	{
+		"name": "Water",
+		"id": "water",
+		"color": "548DAE",
+		"density": 1000,
+		"baseTemperature": 283,
+		"conductivity": 0.8,
+		"viscosity": 0,
+		"slipperiness": 1
+	},
+
+	{
 		"name": "Lava",
 		"id":"lava",
 		"color": "FF8700",
@@ -18,6 +40,6 @@
 		"baseTemperature": 1500,
 		"conductivity": 0.02,
 		"viscosity": 4,
-		"slippery": true
+		"slipperiness": 1
 	}
 ]
