@@ -137,12 +137,16 @@ function mouseToTileCoords(mouseX, mouseY) {
 }
 function handleMouseDown(evt) {
     isMouseDown = true;
-    if (isMouseDown && !isPanning && !canPan)
+    if (evt.button == 1)
+        allowPanning();
+    if (evt.button == 0 && isMouseDown && !isPanning && !canPan)
         placeTileAtMouse(evt.x, evt.y);
     startPanning();
 }
 function handleMouseUp(evt) {
     isMouseDown = false;
+    if (evt.button == 1)
+        disallowPanning();
     stopPanning();
 }
 function handleMouseMove(evt) {

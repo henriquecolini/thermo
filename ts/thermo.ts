@@ -215,7 +215,8 @@ function mouseToTileCoords(mouseX: number, mouseY: number): {x: number, y: numbe
 
 function handleMouseDown(evt: MouseEvent) {
 	isMouseDown = true;
-	if (isMouseDown && !isPanning && !canPan) placeTileAtMouse(evt.x, evt.y);
+	if (evt.button == 1) allowPanning();
+	if (evt.button == 0 && isMouseDown && !isPanning && !canPan) placeTileAtMouse(evt.x, evt.y);
 	startPanning();
 }
 
@@ -223,6 +224,7 @@ function handleMouseDown(evt: MouseEvent) {
 
 function handleMouseUp(evt: MouseEvent) {
 	isMouseDown = false;
+	if (evt.button == 1) disallowPanning();
 	stopPanning();
 }
 
