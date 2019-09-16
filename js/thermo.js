@@ -2,6 +2,7 @@ var txtWidth = document.getElementById("txtWidth");
 var txtHeight = document.getElementById("txtHeight");
 var btnReset = document.getElementById("btnReset");
 var canvas = document.getElementById("canvas");
+var tileDefs = new TileDefManager();
 var world = new World();
 var ctx = canvas.getContext("2d");
 var preCanvas = document.createElement("canvas");
@@ -103,15 +104,32 @@ function handleScroll(evt) {
         }
     }, 1);
 }
+function loadDefs(callback) {
+    var request = new XMLHttpRequest();
+    var url = "elements.json";
+    request.open("GET", url);
+    request.send();
+    request.onreadystatechange = function (ev) {
+        if (request.readyState == 4) {
+            callback(request.status == 200, request.responseText);
+        }
+    };
+}
 updateCanvasSize();
 camera.x = canvas.width / 2;
 camera.y = canvas.height / 2;
-resetWorld();
-setInterval(function () {
-    world.tick();
-    drawWorld();
-    draw();
-}, 100);
+loadDefs(function (success, data) {
+    if (success) {
+        tileDefs.loadJSON(data);
+        console.log(tileDefs.defs);
+        resetWorld();
+        setInterval(function () {
+            world.tick();
+            drawWorld();
+            draw();
+        }, 100);
+    }
+});
 btnReset.addEventListener("click", resetWorld);
 txtHeight.addEventListener("keydown", function (evt) { if (evt.key === "Enter")
     resetWorld(); });

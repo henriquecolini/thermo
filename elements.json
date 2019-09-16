@@ -1,0 +1,11 @@
+[
+	{
+		"name": "Dirt",
+		"id":"dirt",
+		"color": "765D47",
+		"density": 1500,
+		"baseTemperature": 293,
+		"conductivity": 0.02,
+		"viscosity": -1
+	}
+]

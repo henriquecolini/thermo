@@ -5,8 +5,9 @@ const txtHeight = document.getElementById("txtHeight") as HTMLInputElement;
 const btnReset = document.getElementById("btnReset") as HTMLButtonElement;
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
-// World
+// Engine
 
+const tileDefs = new TileDefManager();
 const world = new World();
 
 // Canvas
@@ -172,6 +173,22 @@ function handleScroll(evt: WheelEvent) {
 	}, 1);
 }
 
+function loadDefs(callback: (success: boolean, data: string) => any) {
+
+	const request = new XMLHttpRequest();
+	const url = "elements.json";
+
+	request.open("GET", url);
+	request.send();
+
+	request.onreadystatechange = (ev) => {
+		if (request.readyState == 4) {
+			callback(request.status == 200, request.responseText);
+		}
+	};
+
+}
+
 // =======================================================================================
 
 // Starts
@@ -179,13 +196,22 @@ function handleScroll(evt: WheelEvent) {
 updateCanvasSize();
 camera.x = canvas.width/2;
 camera.y = canvas.height/2;
-resetWorld();
 
-setInterval(() => {
-	world.tick();
-	drawWorld();
-	draw();
-}, 100);
+loadDefs((success, data) => {
+
+	if (success) {
+		tileDefs.loadJSON(data);
+		console.log(tileDefs.defs);
+		
+		resetWorld();
+		setInterval(() => {
+			world.tick();
+			drawWorld();
+			draw();
+		}, 100);
+	}
+
+});
 
 btnReset.addEventListener("click", resetWorld);
 txtHeight.addEventListener("keydown", (evt) => { if(evt.key === "Enter") resetWorld() });
