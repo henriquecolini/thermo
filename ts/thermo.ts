@@ -135,6 +135,60 @@ function pan(deltaX: number, deltaY: number) {
 	draw();
 }
 
+// Places a tile given its grid coordinates
+
+function placeTile(x: number, y: number, redraw: boolean = true) {
+	world.setTile(x,y,new Tile(selectedDef));
+	if (redraw) { 
+		drawWorld();
+		draw();
+	}
+}
+
+// Places a tile given mouse coordinates
+
+function placeTileAtMouse(mouseX: number, mouseY: number) {
+	let coords = mouseToTileCoords(mouseX, mouseY);
+	if (coords){		
+		let {x,y} = coords;
+		placeTile(x,y);
+	}
+}
+
+function placeTileLine(mouseX0: number, mouseY0: number, mouseX1: number, mouseY1: number) {
+
+	let c0 = mouseToTileCoords(mouseX0, mouseY0);
+	let c1 = mouseToTileCoords(mouseX1, mouseY1);
+
+	if (c0 && c1) {
+
+		let x0 = c0.x;
+		let y0 = c0.y;
+		let x1 = c1.x;
+		let y1 = c1.y;
+
+		let dx = Math.abs(x1 - x0);
+		let dy = Math.abs(y1 - y0);
+		let sx = (x0 < x1) ? 1 : -1;
+		let sy = (y0 < y1) ? 1 : -1;
+		let err = dx - dy;
+
+		while(true) {
+
+			placeTile(x0, y0, false); // Do what you need to for this
+
+			if ((x0 === x1) && (y0 === y1)) break;
+			var e2 = 2*err;
+			if (e2 > -dy) { err -= dy; x0  += sx; }
+			if (e2 < dx) { err += dx; y0  += sy; }
+		}
+	}
+
+	drawWorld();
+	draw();
+
+}
+
 // Converts a mouse position in the canvas to tile coordinates
 
 function mouseToTileCoords(mouseX: number, mouseY: number): {x: number, y: number} {
@@ -147,9 +201,6 @@ function mouseToTileCoords(mouseX: number, mouseY: number): {x: number, y: numbe
 	if (worldX > -gridW/2 && worldX < gridW/2 &&
 		worldY > -gridH/2 && worldY < gridH/2) {
 		
-		let tileX = Math.floor(((worldX + gridW/2)/gridW)*world.getWidth());
-		let tileY = Math.floor(((worldY + gridH/2)/gridH)*world.getHeight());
-
 		return {
 			x: Math.floor(((worldX + gridW/2)/gridW)*world.getWidth()),
 			y: Math.floor(((worldY + gridH/2)/gridH)*world.getHeight())
@@ -162,14 +213,15 @@ function mouseToTileCoords(mouseX: number, mouseY: number): {x: number, y: numbe
 
 // Handles onMouseDown event
 
-function handleMouseDown() {
+function handleMouseDown(evt: MouseEvent) {
 	isMouseDown = true;
+	if (isMouseDown && !isPanning && !canPan) placeTileAtMouse(evt.x, evt.y);
 	startPanning();
 }
 
 // Handles onMouseUp event
 
-function handleMouseUp() {
+function handleMouseUp(evt: MouseEvent) {
 	isMouseDown = false;
 	stopPanning();
 }
@@ -185,8 +237,8 @@ function handleMouseMove(evt: MouseEvent) {
 	if (isPanning) pan(evt.x - lastPos.x, evt.y - lastPos.y);
 
 	if (isMouseDown && !isPanning) {
-		let {x,y} = mouseToTileCoords(evt.x, evt.y);
-		world.setTile(x,y,new Tile(selectedDef));
+		//placeTileAtMouse(evt.x, evt.y);
+		placeTileLine(evt.x, evt.y, lastPos.x, lastPos.y);
 	}
 	
 	lastPos.x = evt.x;

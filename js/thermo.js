@@ -75,6 +75,52 @@ function pan(deltaX, deltaY) {
     camera.y += deltaY;
     draw();
 }
+function placeTile(x, y, redraw) {
+    if (redraw === void 0) { redraw = true; }
+    world.setTile(x, y, new Tile(selectedDef));
+    if (redraw) {
+        drawWorld();
+        draw();
+    }
+}
+function placeTileAtMouse(mouseX, mouseY) {
+    var coords = mouseToTileCoords(mouseX, mouseY);
+    if (coords) {
+        var x = coords.x, y = coords.y;
+        placeTile(x, y);
+    }
+}
+function placeTileLine(mouseX0, mouseY0, mouseX1, mouseY1) {
+    var c0 = mouseToTileCoords(mouseX0, mouseY0);
+    var c1 = mouseToTileCoords(mouseX1, mouseY1);
+    if (c0 && c1) {
+        var x0 = c0.x;
+        var y0 = c0.y;
+        var x1 = c1.x;
+        var y1 = c1.y;
+        var dx = Math.abs(x1 - x0);
+        var dy = Math.abs(y1 - y0);
+        var sx = (x0 < x1) ? 1 : -1;
+        var sy = (y0 < y1) ? 1 : -1;
+        var err = dx - dy;
+        while (true) {
+            placeTile(x0, y0, false);
+            if ((x0 === x1) && (y0 === y1))
+                break;
+            var e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x0 += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y0 += sy;
+            }
+        }
+    }
+    drawWorld();
+    draw();
+}
 function mouseToTileCoords(mouseX, mouseY) {
     var gridW = tileWidth * world.getWidth() * camera.zoom;
     var gridH = tileHeight * world.getHeight() * camera.zoom;
@@ -82,8 +128,6 @@ function mouseToTileCoords(mouseX, mouseY) {
     var worldY = mouseY - camera.y;
     if (worldX > -gridW / 2 && worldX < gridW / 2 &&
         worldY > -gridH / 2 && worldY < gridH / 2) {
-        var tileX = Math.floor(((worldX + gridW / 2) / gridW) * world.getWidth());
-        var tileY = Math.floor(((worldY + gridH / 2) / gridH) * world.getHeight());
         return {
             x: Math.floor(((worldX + gridW / 2) / gridW) * world.getWidth()),
             y: Math.floor(((worldY + gridH / 2) / gridH) * world.getHeight())
@@ -91,11 +135,13 @@ function mouseToTileCoords(mouseX, mouseY) {
     }
     return undefined;
 }
-function handleMouseDown() {
+function handleMouseDown(evt) {
     isMouseDown = true;
+    if (isMouseDown && !isPanning && !canPan)
+        placeTileAtMouse(evt.x, evt.y);
     startPanning();
 }
-function handleMouseUp() {
+function handleMouseUp(evt) {
     isMouseDown = false;
     stopPanning();
 }
@@ -107,8 +153,7 @@ function handleMouseMove(evt) {
     if (isPanning)
         pan(evt.x - lastPos.x, evt.y - lastPos.y);
     if (isMouseDown && !isPanning) {
-        var _a = mouseToTileCoords(evt.x, evt.y), x = _a.x, y = _a.y;
-        world.setTile(x, y, new Tile(selectedDef));
+        placeTileLine(evt.x, evt.y, lastPos.x, lastPos.y);
     }
     lastPos.x = evt.x;
     lastPos.y = evt.y;
