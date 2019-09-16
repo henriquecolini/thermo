@@ -1,8 +1,10 @@
 @import "reset";
 
+$font-family: 'Lexend Deca', 'Montserrat', sans-serif;
+
 *, label {
 	box-sizing: border-box;
-	font-family: 'Lexend Deca', 'Montserrat', sans-serif;
+	font-family: $font-family;
 }
 
 body {
@@ -113,4 +115,57 @@ canvas {
 
 #btnClose {
 	margin-bottom: 20px;
+}
+
+.elements {
+
+	position: absolute;
+	bottom: 0;
+	display: flex;
+	flex-wrap: wrap;
+	
+	.element {
+
+		$bullet-margin: 10px;
+
+		margin-top: 10px;
+		font-family: $font-family;
+		color: rgba(0,0,0,0.8);
+		box-shadow: 0 1px 5px rgba(0,0,0,0.5);
+		font-size: 26px;
+		padding: 10px 30px 10px (30px - $bullet-margin);		
+		margin-left: 10px;
+		user-select: none;
+		cursor: pointer;
+		border-bottom: 0px solid rgba(0,0,0,0.7);
+		transition: border-bottom-width 0.5s, padding-bottom 0.5s;
+		border-radius: 10px 10px 0 0;
+
+		&::before {
+			vertical-align: middle;
+			display: inline-block;
+			background: rgba(0,0,0,0.8);
+			width: 0;
+			height: 0;
+			border-radius: 100%;
+			margin-right: $bullet-margin;
+			margin-top: -3px;
+			transition: width 0.5s, height 0.5s;
+			content: '';
+		}
+
+		&.selected::before {
+			width: 10px;
+			height: 10px;
+		}
+
+		&.dark {
+			color: rgba(255,255,255,0.8);
+			&::before {
+				background: rgba(255,255,255,0.8);
+			}
+		}
+
+	}
+
 }

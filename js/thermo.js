@@ -3,6 +3,7 @@ var txtHeight = document.getElementById("txtHeight");
 var btnReset = document.getElementById("btnReset");
 var toggleThermal = document.getElementById("toggleThermal");
 var canvas = document.getElementById("canvas");
+var elementsPanel = document.getElementById("elements");
 var tileDefs = new TileDefManager();
 var world = new World();
 var ctx = canvas.getContext("2d");
@@ -186,7 +187,43 @@ function loadDefs(callback) {
     request.send();
     request.onreadystatechange = function (ev) {
         if (request.readyState == 4) {
-            callback(request.status == 200, request.responseText);
+            var success = request.status == 200;
+            if (success) {
+                tileDefs.loadJSON(request.responseText);
+                while (elementsPanel.lastChild) {
+                    elementsPanel.removeChild(elementsPanel.lastChild);
+                }
+                var lastSelected_1;
+                var _loop_1 = function (i) {
+                    var def = tileDefs.defs[i];
+                    var elementSpan = document.createElement("span");
+                    var textNode = document.createTextNode(def.name);
+                    elementSpan.appendChild(textNode);
+                    elementSpan.className = "element";
+                    elementSpan.style.background = colorToHex(def.color);
+                    if (((def.color.R + def.color.G + def.color.B) / 3) < (0xff / 2)) {
+                        elementSpan.classList.add("dark");
+                    }
+                    if (tileDefs.defaultSelected === def) {
+                        selectedDef = def;
+                        lastSelected_1 = elementSpan;
+                        elementSpan.classList.add("selected");
+                    }
+                    elementSpan.addEventListener("click", function () {
+                        selectedDef = def;
+                        if (lastSelected_1) {
+                            lastSelected_1.classList.remove("selected");
+                        }
+                        elementSpan.classList.add("selected");
+                        lastSelected_1 = elementSpan;
+                    });
+                    elementsPanel.appendChild(elementSpan);
+                };
+                for (var i = 0; i < tileDefs.defs.length; i++) {
+                    _loop_1(i);
+                }
+            }
+            callback(success, request.responseText);
         }
     };
 }
@@ -195,7 +232,6 @@ camera.x = canvas.width / 2;
 camera.y = canvas.height / 2;
 loadDefs(function (success, data) {
     if (success) {
-        tileDefs.loadJSON(data);
         console.log("Successfully loaded tile definitions.");
         console.log(tileDefs.defs);
         resetWorld();

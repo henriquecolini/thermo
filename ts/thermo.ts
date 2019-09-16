@@ -5,6 +5,7 @@ const txtHeight = document.getElementById("txtHeight") as HTMLInputElement;
 const btnReset = document.getElementById("btnReset") as HTMLButtonElement;
 const toggleThermal = document.getElementById("toggleThermal") as HTMLButtonElement;
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const elementsPanel = document.getElementById("elements");
 
 // Engine
 
@@ -279,7 +280,53 @@ function loadDefs(callback: (success: boolean, data: string) => any) {
 
 	request.onreadystatechange = (ev) => {
 		if (request.readyState == 4) {
-			callback(request.status == 200, request.responseText);
+
+			let success = request.status == 200;
+
+			if (success) {
+				tileDefs.loadJSON(request.responseText);
+				while (elementsPanel.lastChild) {
+					elementsPanel.removeChild(elementsPanel.lastChild);
+				}
+
+				let lastSelected: HTMLElement;
+
+				for (let i = 0; i < tileDefs.defs.length; i++) {
+					
+					const def = tileDefs.defs[i];
+
+					let elementSpan = document.createElement("span"); 
+					let textNode = document.createTextNode(def.name); 
+					elementSpan.appendChild(textNode); 
+					elementSpan.className = "element";
+					elementSpan.style.background = colorToHex(def.color);
+
+					if (((def.color.R + def.color.G +def.color.B)/3) < (0xff/2)) {
+						elementSpan.classList.add("dark");
+					}
+
+					if (tileDefs.defaultSelected === def) {
+						selectedDef = def;
+						lastSelected = elementSpan;
+						elementSpan.classList.add("selected");
+					}
+
+					elementSpan.addEventListener("click", () =>{
+						selectedDef = def;
+						if (lastSelected) {
+							lastSelected.classList.remove("selected");
+						}
+						elementSpan.classList.add("selected");
+						lastSelected = elementSpan;
+					});
+
+					elementsPanel.appendChild(elementSpan);
+					
+				}
+			}
+
+			callback(success, request.responseText);
+
 		}
 	};
 
@@ -296,8 +343,6 @@ camera.y = canvas.height/2;
 loadDefs((success, data) => {
 
 	if (success) {
-
-		tileDefs.loadJSON(data);
 
 		console.log("Successfully loaded tile definitions.");
 		console.log(tileDefs.defs);

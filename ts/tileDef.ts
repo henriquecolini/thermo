@@ -12,6 +12,7 @@ interface TileDef {
 	slipperiness?: number,
 	viscosity?: number,
 	static?: boolean,
+	defaultSelected?: boolean,
 	reactions?: {
 		with: string,
 		makes: string,
@@ -22,9 +23,10 @@ interface TileDef {
 class TileDefManager {
 
 	public defs: TileDef[];
+	public defaultSelected: TileDef;
 	private static defaultDefs: TileDef[] = [
-		{name: "Air", id:"air", color: color(0xcfcfcf), density: 1, baseTemperature: 293, conductivity: 0.1, viscosity: 0},
-		{name: "Wall", id:"wall", color: color(0x5c5955), density: Infinity, baseTemperature: 293, conductivity: 0, static: true}
+		{name: "Wall", id:"wall", color: color(0x5c5955), density: Infinity, baseTemperature: 293, conductivity: 0, static: true, defaultSelected: true},
+		{name: "Air", id:"air", color: color(0xcfcfcf), density: 1, baseTemperature: 293, conductivity: 0.1, viscosity: 0}
 	];
 
 	constructor() {
@@ -37,12 +39,14 @@ class TileDefManager {
 		for (let i = 0; i < jsonDefs.length; i++) {
 			const jdef = jsonDefs[i];
 			jdef.color = color(jdef.color);
-			this.defs.push(jdef);
+			let def = jdef as TileDef;
+			this.defs.push(def);
+			if (def.defaultSelected) this.defaultSelected = def;
 		}
 		for (let i = 0; i < TileDefManager.defaultDefs.length; i++) {
 			const def = TileDefManager.defaultDefs[i];
 			if (!this.getById(def.id)) {
-				this.defs.push(def);
+				this.defs.unshift(def);
 			}
 		}
 	}

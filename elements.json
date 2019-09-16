@@ -6,7 +6,8 @@
 		"density": 1500,
 		"baseTemperature": 293,
 		"conductivity": 0.04,
-		"viscosity": -1
+		"viscosity": -1,
+		"defaultSelected": true
 	},
 
 	{
