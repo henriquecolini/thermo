@@ -22,7 +22,7 @@ var Tile = (function () {
         return new Tile(this.def);
     };
     Tile.prototype.canPenetrate = function (other) {
-        return !other.def.static && this.def.density > other.def.density;
+        return (other && true) && (!other.def.static) && (this.def.density > other.def.density) && (!other.justChanged);
     };
     return Tile;
 }());

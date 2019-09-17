@@ -59,30 +59,37 @@ var World = (function () {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
                 var tile = world.getTile(x, y);
-                var top_1 = world.getTile(x, y - 1);
-                var bottom = world.getTile(x, y + 1);
                 var left = world.getTile(x - 1, y);
                 var right = world.getTile(x + 1, y);
-                var bottomLeft = world.getTile(x - 1, y + 1);
-                var bottomRight = world.getTile(x + 1, y + 1);
+                var canBottom = tile.canPenetrate(world.getTile(x, y + 1));
+                var canLeft = tile.canPenetrate(world.getTile(x - 1, y));
+                var canRight = tile.canPenetrate(world.getTile(x + 1, y));
+                var canBLeft = tile.canPenetrate(world.getTile(x - 1, y + 1));
+                var canBRight = tile.canPenetrate(world.getTile(x + 1, y + 1));
                 if (!tile.justChanged) {
                     if (!tile.def.static) {
-                        if (bottom && tile.canPenetrate(bottom)) {
-                            this.swap(x, y, x, y + 1);
-                        }
-                        else if (tile.def.slipperiness > 0) {
-                            var canLeft = bottomLeft && tile.canPenetrate(left) && tile.canPenetrate(bottomLeft);
-                            var canRight = bottomRight && tile.canPenetrate(right) && tile.canPenetrate(bottomRight);
-                            if (canLeft || canRight) {
-                                if (Math.random() <= tile.def.slipperiness) {
-                                    if (canLeft && canRight) {
-                                        this.swap(x, y, x + (Math.random() > 0.5 ? 1 : -1), y);
-                                    }
-                                    else if (canLeft) {
+                        if (tile.def.viscosity >= 0 && (canLeft || canRight)) {
+                            if (Math.random() > tile.def.viscosity) {
+                                if (canLeft && !canRight) {
+                                    if (left.def.id != tile.def.id || (Math.random() < 1 / 8)) {
                                         this.swap(x, y, x - 1, y);
                                     }
-                                    else {
+                                }
+                                if (canRight && !canLeft) {
+                                    if (right.def.id != tile.def.id || (Math.random() < 1 / 8)) {
                                         this.swap(x, y, x + 1, y);
+                                    }
+                                }
+                                if (canLeft && canRight) {
+                                    if (Math.random() > 0.5) {
+                                        if (left.def.id != tile.def.id || (Math.random() < 1 / 8)) {
+                                            this.swap(x, y, x - 1, y);
+                                        }
+                                    }
+                                    else {
+                                        if (right.def.id != tile.def.id || (Math.random() < 1 / 8)) {
+                                            this.swap(x, y, x + 1, y);
+                                        }
                                     }
                                 }
                             }
@@ -92,6 +99,15 @@ var World = (function () {
                 tile.justChanged = false;
             }
         }
+    };
+    World.prototype.swap = function (x1, y1, x2, y2) {
+        var defSwap = this.getTile(x1, y1).def;
+        var heatSwap = this.getTile(x1, y1).temperature;
+        this.getTile(x1, y1).def = this.getTile(x2, y2).def;
+        this.getTile(x2, y2).def = defSwap;
+        this.getTile(x1, y1).temperature = this.getTile(x2, y2).temperature;
+        this.getTile(x2, y2).temperature = heatSwap;
+        this.getTile(x2, y2).justChanged = true;
     };
     World.prototype.tick = function () {
         this.temperatureTick();
@@ -114,15 +130,6 @@ var World = (function () {
         var realY = this.wrapAround ? mod(y, this.height) : y;
         if (this.world[realX])
             this.world[realX][realY] = tile;
-    };
-    World.prototype.swap = function (x1, y1, x2, y2) {
-        var defSwap = this.getTile(x1, y1).def;
-        var heatSwap = this.getTile(x1, y1).temperature;
-        this.getTile(x1, y1).def = this.getTile(x2, y2).def;
-        this.getTile(x2, y2).def = defSwap;
-        this.getTile(x1, y1).temperature = this.getTile(x2, y2).temperature;
-        this.getTile(x2, y2).temperature = heatSwap;
-        this.getTile(x2, y2).justChanged = true;
     };
     World.prototype.getWidth = function () {
         return this.width;

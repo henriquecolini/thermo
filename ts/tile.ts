@@ -35,7 +35,7 @@ class Tile {
 	}
 
 	public canPenetrate(other: Tile): boolean {
-		return !other.def.static && this.def.density > other.def.density;
+		return (other && true) && (!other.def.static) && (this.def.density > other.def.density) && (!other.justChanged);
 	}
 	
 }

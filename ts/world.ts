@@ -81,12 +81,15 @@ class World {
 			for (let y = 0; y < this.height; y++) {
 								
 				const tile = world.getTile(x,y);
-				const top = world.getTile(x,y-1);
-				const bottom = world.getTile(x,y+1);
+				
 				const left = world.getTile(x-1,y);
 				const right = world.getTile(x+1,y);
-				const bottomLeft = world.getTile(x-1,y+1);
-				const bottomRight = world.getTile(x+1,y+1);
+
+				const canBottom = tile.canPenetrate(world.getTile(x,y+1));
+				const canLeft = tile.canPenetrate(world.getTile(x-1,y));
+				const canRight = tile.canPenetrate(world.getTile(x+1,y));
+				const canBLeft = tile.canPenetrate(world.getTile(x-1,y+1));
+				const canBRight = tile.canPenetrate(world.getTile(x+1,y+1));
 
 				if (!tile.justChanged) {
 					
@@ -94,40 +97,89 @@ class World {
 
 						// Law 1: If something with a lower density is below a tile, they will change places.
 
-						if(bottom && tile.canPenetrate(bottom)) {
-							this.swap(x,y,x,y+1);
-						}
-						
+						// if (canBottom) {
+						// 	this.swap(x,y,x,y+1);
+						// }
+
 						// Law 2: Slipperiness is defined by the probability that something will fall to a bottom diagonal.
 
-						else if(tile.def.slipperiness > 0) {
-							let canLeft = bottomLeft && tile.canPenetrate(left) && tile.canPenetrate(bottomLeft);
-							let canRight = bottomRight && tile.canPenetrate(right) && tile.canPenetrate(bottomRight);
-							if (canLeft || canRight) {
-								if (Math.random() <= tile.def.slipperiness) {
-									if (canLeft && canRight) {
-										this.swap(x,y,x + (Math.random() > 0.5 ? 1 : -1),y);
+						// else if (tile.def.slipperiness > 0 && ((canBLeft && canLeft) || (canBRight && canRight))) {
+						// 	if (Math.random() <= tile.def.slipperiness) {
+						// 		if ((canBLeft && canLeft) && (canBRight && canRight)) {
+						// 			this.swap(x,y,x + (Math.random() > 0.5 ? 1 : -1),y);
+						// 		}
+						// 		else if ((canBLeft && canLeft)) {this.swap(x,y,x-1,y);}
+						// 		else {this.swap(x,y,x+1,y);}
+						// 	}
+						// }
+
+						// Law 3: Viscosity is defined by the probability that something will not randomly move sideways.
+
+						//else
+						if (tile.def.viscosity >= 0 && (canLeft || canRight)) {
+
+
+
+							if (Math.random() > tile.def.viscosity) {
+						
+								if (canLeft && !canRight) {
+									if (left.def.id != tile.def.id || (Math.random() < 1/8)) {
+										this.swap(x, y, x - 1, y);
 									}
-									else if (canLeft) {this.swap(x,y,x-1,y);}
-									else {this.swap(x,y,x+1,y);}
 								}
+						
+								if (canRight && !canLeft) {
+									if (right.def.id != tile.def.id || (Math.random() < 1/8)) {
+										this.swap(x, y, x + 1, y);
+									}
+								}
+						
+								if (canLeft && canRight) {
+									if(Math.random() > 0.5){
+										if (left.def.id != tile.def.id || (Math.random() < 1/8)) {
+											this.swap(x, y, x - 1, y);
+										}
+									}else{
+										if (right.def.id != tile.def.id || (Math.random() < 1/8)) {
+											this.swap(x, y, x + 1, y);
+										}
+									}
+								}
+						
 							}
-						}
+						
+						}						
 
 					}
 
 				}
 
-				tile.justChanged = false;		
+				tile.justChanged = false;
 				
 			}
 		}
 
 	}
 
+	public swap(x1: number, y1: number, x2: number, y2: number) {
+		let defSwap = this.getTile(x1, y1).def;
+		let heatSwap = this.getTile(x1, y1).temperature;
+		this.getTile(x1, y1).def = this.getTile(x2, y2).def;
+		this.getTile(x2, y2).def = defSwap;
+		this.getTile(x1, y1).temperature = this.getTile(x2, y2).temperature;
+		this.getTile(x2, y2).temperature = heatSwap;
+		this.getTile(x2, y2).justChanged = true;
+	}
+
 	public tick() {
+		// for (let x = 0; x < this.width; x++) {
+		// 	for (let y = 0; y < this.height; y++) {
+		// 		this.world[x][y].justChanged = false;
+		// 	}
+		// }
 		this.temperatureTick();
 		this.natureTick();
+		// console.log(world);
 	}
 
 	public tickWarp(ticks: number) {
@@ -155,16 +207,6 @@ class World {
 		if (this.world[realX])
 			this.world[realX][realY] = tile;
 
-	}
-
-	public swap(x1: number, y1: number, x2: number, y2: number) {
-		let defSwap = this.getTile(x1, y1).def;
-		let heatSwap = this.getTile(x1, y1).temperature;
-		this.getTile(x1, y1).def = this.getTile(x2, y2).def;
-		this.getTile(x2, y2).def = defSwap;
-		this.getTile(x1, y1).temperature = this.getTile(x2, y2).temperature;
-		this.getTile(x2, y2).temperature = heatSwap;
-		this.getTile(x2, y2).justChanged = true;
 	}
 
 	public getWidth(): number {
