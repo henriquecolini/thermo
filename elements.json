@@ -21,6 +21,17 @@
 		"conductivity": 0.005,
 		"slipperiness": 1
 	},
+	
+	{
+		"name": "Stone",
+		"id":"stone",
+		"color": "525457",
+		"density": 2000,
+		"baseTemperature": 293,
+		"conductivity": 0.01,
+		"boilsAt": 600,
+		"boilsTo": "lava"
+	},
 
 	{
 		"name": "Mud",
@@ -29,6 +40,8 @@
 		"density": 1600,
 		"baseTemperature": 283,
 		"conductivity": 0.05,
+		"boilsAt": 373,
+		"boilsTo": "dirt",
 		"slipperiness": 0.05,
 		"hidden": true
 	},
@@ -40,6 +53,8 @@
 		"density": 1000,
 		"baseTemperature": 283,
 		"conductivity": 0.8,
+		"boilsAt": 420,
+		"boilsTo": "steam",
 		"viscosity": 0,
 		"slipperiness": 1,
 		"solubility": 0.125,
@@ -55,6 +70,8 @@
 		"density": 4000,
 		"baseTemperature": 1500,
 		"conductivity": 0.02,
+		"freezesAt": 600,
+		"freezesTo": "stone",
 		"viscosity": 0.6,
 		"slipperiness": 1,
 		"solubility": 0.06
@@ -79,9 +96,25 @@
 		"density": "0.1",
 		"baseTemperature": 1800,
 		"conductivity": 0.9,
+		"freezesAt": 300,
+		"freezesTo": "air",
 		"reactions":{
-			"air": { "makes": "air", "speed": 0.01 }
+			"air": { "makes": "air", "speed": 0.01 },
+			"water":  { "makes": "air", "speed": 1 }
 		}
+	},
+
+	{
+		"name": "Steam",
+		"id": "steam",
+		"color": "ffffff",
+		"density": "0.5",
+		"baseTemperature": 400,
+		"conductivity": 0.6,
+		"freezesAt": 420,
+		"freezesTo": "water",
+		"hidden": true
 	}
+
 
 ]

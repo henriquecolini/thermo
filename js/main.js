@@ -236,7 +236,7 @@ loadDefs(function (success, data) {
     if (success) {
         resetWorld();
         setInterval(function () {
-            if (isMouseDown) {
+            if (isMouseDown && !isPanning) {
                 placeTileAtMouse(lastPos.x, lastPos.y);
             }
             world.tick();

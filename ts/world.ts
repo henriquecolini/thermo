@@ -33,10 +33,7 @@ class World {
 		for (let x=0; x<this.width; x++) {
 			this.tiles[x] = [];
 			for (let y=0; y<this.height;y++){
-				this.tiles[x][y] = 
-					x == 0 || y == 0 || x == width - 1 || y == height - 1?
-					new Tile(tileDefs.getById("wall")) :
-					new Tile(tileDefs.getById("air"));
+				this.tiles[x][y] = new Tile(tileDefs.getById("air"));
 			}
 		}
 
