@@ -27,7 +27,8 @@
 		"baseTemperature": 283,
 		"conductivity": 0.8,
 		"viscosity": 0,
-		"slipperiness": 1
+		"slipperiness": 1,
+		"solubility": 0.125
 	},
 
 	{
@@ -38,6 +39,7 @@
 		"baseTemperature": 1500,
 		"conductivity": 0.02,
 		"viscosity": 0.6,
-		"slipperiness": 1
+		"slipperiness": 1,
+		"solubility": 0.06
 	}
 ]

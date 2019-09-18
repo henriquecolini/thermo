@@ -4,11 +4,21 @@ function mod(n: number, m: number): number {
 	return ((n % m) + m) % m;
 }
 
+// A 2D tile-based world, simulating physics and chemistry.
+//
+// LAWS OF NATURE
+//
+// Law 0: Something may only take the place of something of lower density.
+// Law 1: If something with a lower density is below a tile, they will change places.
+// Law 2: Slipperiness is defined by the probability that something will fall to a bottom diagonal.
+// Law 3: Viscosity is defined by the probability that something will not randomly move sideways.
+// Law 4: Solubility is defined by the probability that something less dense than whatever it is immersed in randomly moves sideways.
+
 class World {
 
 	private width = 1;
 	private height = 1;
-	private world: Tile[][];
+	private tiles: Tile[][];
 	public wrapAround = false;
 
 	// Generates a new world
@@ -18,12 +28,12 @@ class World {
 		this.width = width;
 		this.height = height;
 
-		this.world = [];
+		this.tiles = [];
 
 		for (let x=0; x<this.width; x++) {
-			this.world[x] = [];
+			this.tiles[x] = [];
 			for (let y=0; y<this.height;y++){
-				this.world[x][y] = 
+				this.tiles[x][y] = 
 					x == 0 || y == 0 || x == width - 1 || y == height - 1?
 					new Tile(tileDefs.getById("wall")) :
 					new Tile(tileDefs.getById("air"));
@@ -40,7 +50,7 @@ class World {
 
 		for (let x=0; x<this.width; x++) {
 			for (let y=0; y<this.height;y++){			
-				arr.push({tile: this.world[x][y], x: x, y: y});
+				arr.push({tile: this.tiles[x][y], x: x, y: y});
 			}
 		}
 
@@ -79,69 +89,76 @@ class World {
 
 		for (let x = 0; x < this.width; x++) {
 			for (let y = 0; y < this.height; y++) {
-								
-				const tile = world.getTile(x,y);
 				
-				const left = world.getTile(x-1,y);
-				const right = world.getTile(x+1,y);
+				const tile = this.tiles[x][y]; // Access world[][] directly only when confident the tile exists
+				
+				const left = this.getTile(x-1,y);
+				const right = this.getTile(x+1,y);
+				const top = this.getTile(x-1,y);
+				const bottom = this.getTile(x+1,y);				
+				const topLeft = this.getTile(x-1,y-1);
+				const topRight = this.getTile(x+1,y-1);
 
-				const canBottom = tile.canPenetrate(world.getTile(x,y+1));
-				const canLeft = tile.canPenetrate(world.getTile(x-1,y));
-				const canRight = tile.canPenetrate(world.getTile(x+1,y));
-				const canBLeft = tile.canPenetrate(world.getTile(x-1,y+1));
-				const canBRight = tile.canPenetrate(world.getTile(x+1,y+1));
+				const canBottom = tile.canReplace(bottom);
+				const canLeft = tile.canReplace(left);
+				const canRight = tile.canReplace(right);
+				const canBottomLeft = tile.canReplace(this.getTile(x-1,y+1));
+				const canBottomRight = tile.canReplace(this.getTile(x+1,y+1));
 
 				if (!tile.justChanged) {
 					
 					if (!tile.def.static) {
 
-						// Law 1: If something with a lower density is below a tile, they will change places.
+						// Law 1
 
-						// if (canBottom) {
-						// 	this.swap(x,y,x,y+1);
-						// }
+						if (canBottom) {
+							this.replace(x,y,x,y+1);
+						}
 
-						// Law 2: Slipperiness is defined by the probability that something will fall to a bottom diagonal.
+						// Law 2
 
-						// else if (tile.def.slipperiness > 0 && ((canBLeft && canLeft) || (canBRight && canRight))) {
-						// 	if (Math.random() <= tile.def.slipperiness) {
-						// 		if ((canBLeft && canLeft) && (canBRight && canRight)) {
-						// 			this.swap(x,y,x + (Math.random() > 0.5 ? 1 : -1),y);
-						// 		}
-						// 		else if ((canBLeft && canLeft)) {this.swap(x,y,x-1,y);}
-						// 		else {this.swap(x,y,x+1,y);}
-						// 	}
-						// }
+						else if (tile.def.slipperiness > 0 && ((canBottomLeft && canLeft) || (canBottomRight && canRight))) {
+							if (Math.random() <= tile.def.slipperiness) {
+								if ((canBottomLeft && canLeft) && (canBottomRight && canRight)) {
+									this.replace(x,y,x + (Math.random() > 0.5 ? 1 : -1),y);
+								}
+								else if ((canBottomLeft && canLeft)) {this.replace(x,y,x-1,y);}
+								else {this.replace(x,y,x+1,y);}
+							}
+						}
 
-						// Law 3: Viscosity is defined by the probability that something will not randomly move sideways.
+						// Law 3
 
-						//else
-						if (tile.def.viscosity >= 0 && (canLeft || canRight)) {
-
-
+						else if (tile.def.viscosity >= 0 && (canLeft || canRight)) {
 
 							if (Math.random() > tile.def.viscosity) {
 						
+								// Law 4
+
+								const mixProbability = tile.def.solubility > 0 ? Math.random() < tile.def.solubility : 0;
+								const reallyCanLeft = (canLeft && !topLeft.canReplace(left)) || mixProbability;
+								const reallyCanRight = (canRight && !topRight.canReplace(right)) || mixProbability;
+
 								if (canLeft && !canRight) {
-									if (left.def.id != tile.def.id || (Math.random() < 1/8)) {
-										this.swap(x, y, x - 1, y);
+									if (reallyCanLeft) {
+										this.replace(x, y, x - 1, y);
 									}
 								}
 						
 								if (canRight && !canLeft) {
-									if (right.def.id != tile.def.id || (Math.random() < 1/8)) {
-										this.swap(x, y, x + 1, y);
+									if (reallyCanRight) {
+										this.replace(x, y, x + 1, y);
 									}
 								}
 						
-								if (canLeft && canRight) {
+								if (canLeft && canRight && (reallyCanLeft || reallyCanRight)) {
 									if(Math.random() > 0.5){
-										if (left.def.id != tile.def.id || (Math.random() < 1/8)) {
-											this.swap(x, y, x - 1, y);
+										if (reallyCanLeft) {
+											this.replace(x, y, x - 1, y);
 										}
 									}else{
-										if (right.def.id != tile.def.id || (Math.random() < 1/8)) {
-											this.swap(x, y, x + 1, y);
+										if (reallyCanRight) {
+											this.replace(x, y, x + 1, y);
 										}
 									}
 								}
@@ -154,32 +171,23 @@ class World {
 
 				}
 
-				tile.justChanged = false;
+				this.tiles[x][y].justChanged = false;
 				
 			}
 		}
 
 	}
 
-	public swap(x1: number, y1: number, x2: number, y2: number) {
-		let defSwap = this.getTile(x1, y1).def;
-		let heatSwap = this.getTile(x1, y1).temperature;
-		this.getTile(x1, y1).def = this.getTile(x2, y2).def;
-		this.getTile(x2, y2).def = defSwap;
-		this.getTile(x1, y1).temperature = this.getTile(x2, y2).temperature;
-		this.getTile(x2, y2).temperature = heatSwap;
-		this.getTile(x2, y2).justChanged = true;
+	public replace(x1: number, y1: number, x2: number, y2: number) {
+		let replace = this.getTile(x1, y1);
+		this.setTile(x1, y1, this.getTile(x2, y2));
+		this.setTile(x2, y2, replace);
+		replace.justChanged = true;
 	}
 
-	public tick() {
-		// for (let x = 0; x < this.width; x++) {
-		// 	for (let y = 0; y < this.height; y++) {
-		// 		this.world[x][y].justChanged = false;
-		// 	}
-		// }
+	public tick() {		
 		this.temperatureTick();
 		this.natureTick();
-		// console.log(world);
 	}
 
 	public tickWarp(ticks: number) {
@@ -187,7 +195,7 @@ class World {
 	}
 
 	public getTiles(): Tile[][] {
-		return this.world;
+		return this.tiles;
 	}
 
 	public getTile(x: number, y: number): Tile {
@@ -195,7 +203,7 @@ class World {
 		let realX = this.wrapAround ? mod(x, this.width) : x;
 		let realY = this.wrapAround ? mod(y, this.height) : y;
 		
-		return this.world[realX] ? this.world[realX][realY] : undefined;
+		return this.tiles[realX] ? this.tiles[realX][realY] : undefined;
 
 	}
 
@@ -204,8 +212,8 @@ class World {
 		let realX = this.wrapAround ? mod(x, this.width) : x;
 		let realY = this.wrapAround ? mod(y, this.height) : y;
 		
-		if (this.world[realX])
-			this.world[realX][realY] = tile;
+		if (this.tiles[realX])
+			this.tiles[realX][realY] = tile;
 
 	}
 

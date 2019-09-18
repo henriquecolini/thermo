@@ -34,8 +34,8 @@ class Tile {
 		return new Tile(this.def);
 	}
 
-	public canPenetrate(other: Tile): boolean {
-		return (other && true) && (!other.def.static) && (this.def.density > other.def.density) && (!other.justChanged);
+	public canReplace(other: Tile): boolean {
+		return (other && true) && (!other.def.static) && (!this.def.static) && (this.def.density > other.def.density);
 	}
 	
 }

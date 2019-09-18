@@ -10,11 +10,11 @@ var World = (function () {
     World.prototype.generate = function (width, height) {
         this.width = width;
         this.height = height;
-        this.world = [];
+        this.tiles = [];
         for (var x = 0; x < this.width; x++) {
-            this.world[x] = [];
+            this.tiles[x] = [];
             for (var y = 0; y < this.height; y++) {
-                this.world[x][y] =
+                this.tiles[x][y] =
                     x == 0 || y == 0 || x == width - 1 || y == height - 1 ?
                         new Tile(tileDefs.getById("wall")) :
                         new Tile(tileDefs.getById("air"));
@@ -25,7 +25,7 @@ var World = (function () {
         var arr = [];
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
-                arr.push({ tile: this.world[x][y], x: x, y: y });
+                arr.push({ tile: this.tiles[x][y], x: x, y: y });
             }
         }
         arr.sort(function (a, b) {
@@ -58,37 +58,60 @@ var World = (function () {
     World.prototype.natureTick = function () {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
-                var tile = world.getTile(x, y);
-                var left = world.getTile(x - 1, y);
-                var right = world.getTile(x + 1, y);
-                var canBottom = tile.canPenetrate(world.getTile(x, y + 1));
-                var canLeft = tile.canPenetrate(world.getTile(x - 1, y));
-                var canRight = tile.canPenetrate(world.getTile(x + 1, y));
-                var canBLeft = tile.canPenetrate(world.getTile(x - 1, y + 1));
-                var canBRight = tile.canPenetrate(world.getTile(x + 1, y + 1));
+                var tile = this.tiles[x][y];
+                var left = this.getTile(x - 1, y);
+                var right = this.getTile(x + 1, y);
+                var top_1 = this.getTile(x - 1, y);
+                var bottom = this.getTile(x + 1, y);
+                var topLeft = this.getTile(x - 1, y - 1);
+                var topRight = this.getTile(x + 1, y - 1);
+                var canBottom = tile.canReplace(bottom);
+                var canLeft = tile.canReplace(left);
+                var canRight = tile.canReplace(right);
+                var canBottomLeft = tile.canReplace(this.getTile(x - 1, y + 1));
+                var canBottomRight = tile.canReplace(this.getTile(x + 1, y + 1));
                 if (!tile.justChanged) {
                     if (!tile.def.static) {
-                        if (tile.def.viscosity >= 0 && (canLeft || canRight)) {
+                        if (canBottom) {
+                            this.replace(x, y, x, y + 1);
+                        }
+                        else if (tile.def.slipperiness > 0 && ((canBottomLeft && canLeft) || (canBottomRight && canRight))) {
+                            if (Math.random() <= tile.def.slipperiness) {
+                                if ((canBottomLeft && canLeft) && (canBottomRight && canRight)) {
+                                    this.replace(x, y, x + (Math.random() > 0.5 ? 1 : -1), y);
+                                }
+                                else if ((canBottomLeft && canLeft)) {
+                                    this.replace(x, y, x - 1, y);
+                                }
+                                else {
+                                    this.replace(x, y, x + 1, y);
+                                }
+                            }
+                        }
+                        else if (tile.def.viscosity >= 0 && (canLeft || canRight)) {
                             if (Math.random() > tile.def.viscosity) {
+                                var mixProbability = tile.def.solubility > 0 ? Math.random() < tile.def.solubility : 0;
+                                var reallyCanLeft = (canLeft && !topLeft.canReplace(left)) || mixProbability;
+                                var reallyCanRight = (canRight && !topRight.canReplace(right)) || mixProbability;
                                 if (canLeft && !canRight) {
-                                    if (left.def.id != tile.def.id || (Math.random() < 1 / 8)) {
-                                        this.swap(x, y, x - 1, y);
+                                    if (reallyCanLeft) {
+                                        this.replace(x, y, x - 1, y);
                                     }
                                 }
                                 if (canRight && !canLeft) {
-                                    if (right.def.id != tile.def.id || (Math.random() < 1 / 8)) {
-                                        this.swap(x, y, x + 1, y);
+                                    if (reallyCanRight) {
+                                        this.replace(x, y, x + 1, y);
                                     }
                                 }
-                                if (canLeft && canRight) {
+                                if (canLeft && canRight && (reallyCanLeft || reallyCanRight)) {
                                     if (Math.random() > 0.5) {
-                                        if (left.def.id != tile.def.id || (Math.random() < 1 / 8)) {
-                                            this.swap(x, y, x - 1, y);
+                                        if (reallyCanLeft) {
+                                            this.replace(x, y, x - 1, y);
                                         }
                                     }
                                     else {
-                                        if (right.def.id != tile.def.id || (Math.random() < 1 / 8)) {
-                                            this.swap(x, y, x + 1, y);
+                                        if (reallyCanRight) {
+                                            this.replace(x, y, x + 1, y);
                                         }
                                     }
                                 }
@@ -96,18 +119,15 @@ var World = (function () {
                         }
                     }
                 }
-                tile.justChanged = false;
+                this.tiles[x][y].justChanged = false;
             }
         }
     };
-    World.prototype.swap = function (x1, y1, x2, y2) {
-        var defSwap = this.getTile(x1, y1).def;
-        var heatSwap = this.getTile(x1, y1).temperature;
-        this.getTile(x1, y1).def = this.getTile(x2, y2).def;
-        this.getTile(x2, y2).def = defSwap;
-        this.getTile(x1, y1).temperature = this.getTile(x2, y2).temperature;
-        this.getTile(x2, y2).temperature = heatSwap;
-        this.getTile(x2, y2).justChanged = true;
+    World.prototype.replace = function (x1, y1, x2, y2) {
+        var replace = this.getTile(x1, y1);
+        this.setTile(x1, y1, this.getTile(x2, y2));
+        this.setTile(x2, y2, replace);
+        replace.justChanged = true;
     };
     World.prototype.tick = function () {
         this.temperatureTick();
@@ -118,18 +138,18 @@ var World = (function () {
             this.tick();
     };
     World.prototype.getTiles = function () {
-        return this.world;
+        return this.tiles;
     };
     World.prototype.getTile = function (x, y) {
         var realX = this.wrapAround ? mod(x, this.width) : x;
         var realY = this.wrapAround ? mod(y, this.height) : y;
-        return this.world[realX] ? this.world[realX][realY] : undefined;
+        return this.tiles[realX] ? this.tiles[realX][realY] : undefined;
     };
     World.prototype.setTile = function (x, y, tile) {
         var realX = this.wrapAround ? mod(x, this.width) : x;
         var realY = this.wrapAround ? mod(y, this.height) : y;
-        if (this.world[realX])
-            this.world[realX][realY] = tile;
+        if (this.tiles[realX])
+            this.tiles[realX][realY] = tile;
     };
     World.prototype.getWidth = function () {
         return this.width;

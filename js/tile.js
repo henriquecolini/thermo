@@ -21,8 +21,8 @@ var Tile = (function () {
     Tile.prototype.clone = function () {
         return new Tile(this.def);
     };
-    Tile.prototype.canPenetrate = function (other) {
-        return (other && true) && (!other.def.static) && (this.def.density > other.def.density) && (!other.justChanged);
+    Tile.prototype.canReplace = function (other) {
+        return (other && true) && (!other.def.static) && (!this.def.static) && (this.def.density > other.def.density);
     };
     return Tile;
 }());
