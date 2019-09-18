@@ -6,7 +6,10 @@
 		"density": 1500,
 		"baseTemperature": 293,
 		"conductivity": 0.04,
-		"defaultSelected": true
+		"defaultSelected": true,
+		"reactions": {
+			"water": {"makes": "mud", "speed": "0.05", "byproduct": "air"}
+		}
 	},
 
 	{
@@ -17,6 +20,17 @@
 		"baseTemperature": 293,
 		"conductivity": 0.005,
 		"slipperiness": 1
+	},
+
+	{
+		"name": "Mud",
+		"id": "mud",
+		"color": "523b26",
+		"density": 1600,
+		"baseTemperature": 283,
+		"conductivity": 0.05,
+		"slipperiness": 0.05,
+		"hidden": true
 	},
 
 	{
@@ -41,5 +55,17 @@
 		"viscosity": 0.6,
 		"slipperiness": 1,
 		"solubility": 0.06
+	},
+
+	{
+		"name": "Slime",
+		"id":"lava",
+		"color": "5e6b2b",
+		"density": 4000,
+		"baseTemperature": 293,
+		"conductivity": 0.6,
+		"viscosity": 0.9,
+		"slipperiness": 0,
+		"solubility": 0
 	}
 ]

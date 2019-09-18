@@ -22,7 +22,11 @@ class Tile {
 	public justChanged = false;
 	
 	constructor(tileDef: TileDef) {
-		this.def = tileDef;
+		this.resetDef(tileDef);
+	}
+
+	public resetDef(def: TileDef) {
+		this.def = def;
 		this.temperature = this.def.baseTemperature;
 	}
 

@@ -139,7 +139,7 @@ function pan(deltaX: number, deltaY: number) {
 // Places a tile given its grid coordinates
 
 function placeTile(x: number, y: number, redraw: boolean = true) {
-	world.setTile(x,y,new Tile(selectedDef));
+	world.setTile(x,y,selectedDef);
 	if (redraw) { 
 		drawWorld();
 		draw();
@@ -284,7 +284,9 @@ function loadDefs(callback: (success: boolean, data: string) => any) {
 			let success = request.status == 200;
 
 			if (success) {
+
 				tileDefs.loadJSON(request.responseText);
+
 				while (elementsPanel.lastChild) {
 					elementsPanel.removeChild(elementsPanel.lastChild);
 				}
@@ -295,36 +297,40 @@ function loadDefs(callback: (success: boolean, data: string) => any) {
 					
 					const def = tileDefs.defs[i];
 
-					let elementSpan = document.createElement("span"); 
-					let textNode = document.createTextNode(def.name); 
-					elementSpan.appendChild(textNode); 
-					elementSpan.className = "element";
-					elementSpan.style.background = colorToHex(def.color);
+					if (!def.hidden) {
 
-					if (((def.color.R + def.color.G +def.color.B)/3) < (0xff/2)) {
-						elementSpan.classList.add("dark");
-					}
+						let elementSpan = document.createElement("span"); 
+						let textNode = document.createTextNode(def.name); 
+						elementSpan.appendChild(textNode); 
+						elementSpan.className = "element";
+						elementSpan.style.background = colorToHex(def.color);
 
-					if (tileDefs.defaultSelected === def) {
-						selectedDef = def;
-						lastSelected = elementSpan;
-						elementSpan.classList.add("selected");
-					}
-
-					elementSpan.addEventListener("click", () =>{
-						selectedDef = def;
-						if (lastSelected) {
-							lastSelected.classList.remove("selected");
+						if (((def.color.R + def.color.G +def.color.B)/3) < (0xff/2)) {
+							elementSpan.classList.add("dark");
 						}
-						elementSpan.classList.add("selected");
-						lastSelected = elementSpan;
-					});
 
-					elementsPanel.appendChild(elementSpan);
+						if (tileDefs.defaultSelected === def) {
+							selectedDef = def;
+							lastSelected = elementSpan;
+							elementSpan.classList.add("selected");
+						}
+
+						elementSpan.addEventListener("click", () =>{
+							selectedDef = def;
+							if (lastSelected) {
+								lastSelected.classList.remove("selected");
+							}
+							elementSpan.classList.add("selected");
+							lastSelected = elementSpan;
+						});
+
+						elementsPanel.appendChild(elementSpan);
+						
+					}				
 					
 				}
 			}
-
+			
 			callback(success, request.responseText);
 
 		}
@@ -344,9 +350,6 @@ loadDefs((success, data) => {
 
 	if (success) {
 
-		console.log("Successfully loaded tile definitions.");
-		console.log(tileDefs.defs);
-		
 		resetWorld();
 		setInterval(() => {
 			world.tick();

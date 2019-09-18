@@ -14,17 +14,19 @@ interface TileDef {
 	solubility?: number,
 	static?: boolean,
 	defaultSelected?: boolean,
-	reactions?: {
-		with: string,
+	hidden?: boolean,
+	reactions?: {[index: string]:{
 		makes: string,
-		likelihood: number
-	}[],
+		speed: number,
+		byproduct?: string
+	}}
 };
 
 class TileDefManager {
 
 	public defs: TileDef[];
 	public defaultSelected: TileDef;
+	private cache: {[index: string]: TileDef};
 	private static defaultDefs: TileDef[] = [
 		{name: "Wall", id:"wall", color: color(0x5c5955), density: Infinity, baseTemperature: 293, conductivity: 0, static: true, defaultSelected: true},
 		{name: "Air", id:"air", color: color(0xcfcfcf), density: 1, baseTemperature: 293, conductivity: 0.1, viscosity: 0, solubility: 0.125}
@@ -32,6 +34,7 @@ class TileDefManager {
 
 	constructor() {
 		this.defs = TileDefManager.defaultDefs;
+		this.resetCache();
 	}
 
 	public loadJSON(json: string) {
@@ -46,18 +49,32 @@ class TileDefManager {
 		}
 		for (let i = 0; i < TileDefManager.defaultDefs.length; i++) {
 			const def = TileDefManager.defaultDefs[i];
-			if (!this.getById(def.id)) {
+			if (!this.getById(def.id, true)) {
 				this.defs.unshift(def);
 			}
 		}
+		this.resetCache();
 	}
 
-	public getById(id: string): TileDef {
-		for (let i = 0; i < this.defs.length; i++) {
-			const def = this.defs[i];
-			if (def.id === id) return def;
+	public getById(id: string, ignoreCache: boolean = false): TileDef {
+		if (!ignoreCache) {
+			return this.cache[id];
+		}
+		else {
+			for (let i = 0; i < this.defs.length; i++) {
+				const def = this.defs[i];
+				if (def.id === id) return def;
+			}
 		}
 		return undefined;
+	}
+
+	private resetCache() {
+		this.cache = {};
+		for (let i = 0; i < this.defs.length; i++) {
+			const def = this.defs[i];
+			this.cache[def.id] = def;
+		}
 	}
 
 }

@@ -12,9 +12,12 @@ function lerpColor(a, b, amount) {
 var Tile = (function () {
     function Tile(tileDef) {
         this.justChanged = false;
-        this.def = tileDef;
-        this.temperature = this.def.baseTemperature;
+        this.resetDef(tileDef);
     }
+    Tile.prototype.resetDef = function (def) {
+        this.def = def;
+        this.temperature = this.def.baseTemperature;
+    };
     Tile.prototype.getThermalColor = function () {
         return temperatureColor(this.temperature);
     };

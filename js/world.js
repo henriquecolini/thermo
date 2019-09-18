@@ -23,9 +23,10 @@ var World = (function () {
     };
     World.prototype.temperatureTick = function () {
         var arr = [];
+        var world = this;
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
-                arr.push({ tile: this.tiles[x][y], x: x, y: y });
+                arr.push({ tile: world.tiles[x][y], x: x, y: y });
             }
         }
         arr.sort(function (a, b) {
@@ -59,19 +60,56 @@ var World = (function () {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
                 var tile = this.tiles[x][y];
-                var left = this.getTile(x - 1, y);
-                var right = this.getTile(x + 1, y);
-                var top_1 = this.getTile(x - 1, y);
-                var bottom = this.getTile(x + 1, y);
-                var topLeft = this.getTile(x - 1, y - 1);
-                var topRight = this.getTile(x + 1, y - 1);
-                var canBottom = tile.canReplace(bottom);
-                var canLeft = tile.canReplace(left);
-                var canRight = tile.canReplace(right);
-                var canBottomLeft = tile.canReplace(this.getTile(x - 1, y + 1));
-                var canBottomRight = tile.canReplace(this.getTile(x + 1, y + 1));
                 if (!tile.justChanged) {
-                    if (!tile.def.static) {
+                    var left = this.getTile(x - 1, y);
+                    var right = this.getTile(x + 1, y);
+                    var top_1 = this.getTile(x, y - 1);
+                    var bottom = this.getTile(x, y + 1);
+                    var topLeft = this.getTile(x - 1, y - 1);
+                    var topRight = this.getTile(x + 1, y - 1);
+                    var canBottom = tile.canReplace(bottom);
+                    var canLeft = tile.canReplace(left);
+                    var canRight = tile.canReplace(right);
+                    var canBottomLeft = tile.canReplace(this.getTile(x - 1, y + 1));
+                    var canBottomRight = tile.canReplace(this.getTile(x + 1, y + 1));
+                    var possibleReactions = [];
+                    if (top_1 && tile.def.reactions && tile.def.reactions[top_1.def.id])
+                        possibleReactions.push({ reaction: tile.def.reactions[top_1.def.id], xOff: 0, yOff: -1 });
+                    if (bottom && tile.def.reactions && tile.def.reactions[bottom.def.id])
+                        possibleReactions.push({ reaction: tile.def.reactions[bottom.def.id], xOff: 0, yOff: 1 });
+                    if (left && tile.def.reactions && tile.def.reactions[left.def.id])
+                        possibleReactions.push({ reaction: tile.def.reactions[left.def.id], xOff: -1, yOff: 0 });
+                    if (right && tile.def.reactions && tile.def.reactions[right.def.id])
+                        possibleReactions.push({ reaction: tile.def.reactions[right.def.id], xOff: 1, yOff: 0 });
+                    var reacted = false;
+                    if (possibleReactions.length > 0) {
+                        var greatest = 0;
+                        for (var i = 0; i < possibleReactions.length; i++) {
+                            if (possibleReactions[greatest].reaction.speed < possibleReactions[i].reaction.speed)
+                                greatest = i;
+                        }
+                        var selected = possibleReactions[greatest];
+                        if (Math.random() <= selected.reaction.speed) {
+                            var newDef = tileDefs.getById(selected.reaction.makes);
+                            if (newDef) {
+                                tile.resetDef(newDef);
+                                if (selected.reaction.byproduct) {
+                                    var byDef = tileDefs.getById(selected.reaction.byproduct);
+                                    if (byDef) {
+                                        this.setTile(x + selected.xOff, y + selected.yOff, tileDefs.getById(selected.reaction.byproduct));
+                                    }
+                                    else {
+                                        console.error("A " + tile.def.id + " tried to make a byproduct of " + selected.reaction.makes + ", but that doesn't exist!");
+                                    }
+                                }
+                                reacted = true;
+                            }
+                            else {
+                                console.error("A " + tile.def.id + " tried to produce a " + selected.reaction.makes + ", but that doesn't exist!");
+                            }
+                        }
+                    }
+                    if (!reacted && !tile.def.static) {
                         if (canBottom) {
                             this.replace(x, y, x, y + 1);
                         }
@@ -140,16 +178,31 @@ var World = (function () {
     World.prototype.getTiles = function () {
         return this.tiles;
     };
+    World.prototype.getRealPos = function (x, y) {
+        return {
+            realX: this.wrapAround ? mod(x, this.width) : x,
+            realY: this.wrapAround ? mod(y, this.height) : y
+        };
+    };
     World.prototype.getTile = function (x, y) {
-        var realX = this.wrapAround ? mod(x, this.width) : x;
-        var realY = this.wrapAround ? mod(y, this.height) : y;
+        var _a = this.getRealPos(x, y), realX = _a.realX, realY = _a.realY;
         return this.tiles[realX] ? this.tiles[realX][realY] : undefined;
     };
     World.prototype.setTile = function (x, y, tile) {
-        var realX = this.wrapAround ? mod(x, this.width) : x;
-        var realY = this.wrapAround ? mod(y, this.height) : y;
-        if (this.tiles[realX])
-            this.tiles[realX][realY] = tile;
+        var _a = this.getRealPos(x, y), realX = _a.realX, realY = _a.realY;
+        if (this.tiles[realX] && this.tiles[realX][realY]) {
+            if (tile instanceof Tile) {
+                this.tiles[realX][realY] = tile;
+            }
+            else {
+                this.tiles[realX][realY].resetDef(tile);
+            }
+        }
+    };
+    World.prototype.removeTile = function (x, y) {
+        var _a = this.getRealPos(x, y), realX = _a.realX, realY = _a.realY;
+        if (this.tiles[realX] && this.tiles[realX][realY])
+            this.tiles[realX][realY].resetDef(tileDefs.getById("air"));
     };
     World.prototype.getWidth = function () {
         return this.width;
