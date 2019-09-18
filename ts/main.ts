@@ -352,6 +352,9 @@ loadDefs((success, data) => {
 
 		resetWorld();
 		setInterval(() => {
+			if (isMouseDown) {
+				placeTileAtMouse(lastPos.x, lastPos.y);
+			}
 			world.tick();
 			drawWorld();
 			draw();

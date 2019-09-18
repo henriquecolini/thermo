@@ -236,6 +236,9 @@ loadDefs(function (success, data) {
     if (success) {
         resetWorld();
         setInterval(function () {
+            if (isMouseDown) {
+                placeTileAtMouse(lastPos.x, lastPos.y);
+            }
             world.tick();
             drawWorld();
             draw();
@@ -260,4 +263,4 @@ canvas.addEventListener("mousedown", handleMouseDown);
 canvas.addEventListener("mouseup", handleMouseUp);
 canvas.addEventListener("mousemove", handleMouseMove);
 canvas.addEventListener("wheel", handleScroll);
-//# sourceMappingURL=thermo.js.map
+//# sourceMappingURL=main.js.map
