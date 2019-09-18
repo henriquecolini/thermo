@@ -109,49 +109,22 @@ class World {
 					const canBottomLeft = tile.canReplace(this.getTile(x-1,y+1));
 					const canBottomRight = tile.canReplace(this.getTile(x+1,y+1));	
 
-					let possibleReactions: {reaction: {makes: string, speed: number, byproduct?: string}, xOff: number, yOff: number}[] = [];
+					let directions = [top,bottom,left,right];
 
-					if(top && !top.justReacted && tile.def.reactions && tile.def.reactions[top.def.id])
-						possibleReactions.push({reaction: tile.def.reactions[top.def.id], xOff: 0, yOff: -1});
+					for (let i = 0; i < directions.length; i++) {
 
-					if(bottom && !bottom.justReacted && tile.def.reactions && tile.def.reactions[bottom.def.id])
-						possibleReactions.push({reaction: tile.def.reactions[bottom.def.id], xOff: 0, yOff: 1});
+						const dir = directions[i];
 
-					if(left && !left.justReacted && tile.def.reactions && tile.def.reactions[left.def.id])
-						possibleReactions.push({reaction: tile.def.reactions[left.def.id], xOff: -1, yOff: 0});
+						let reaction = dir && dir.def.reactions ? dir.def.reactions[tile.def.id] : undefined;
+						reaction = reaction && Math.random() <= reaction.speed ? reaction : undefined;
 
-					if(right && !right.justReacted && tile.def.reactions && tile.def.reactions[right.def.id])
-						possibleReactions.push({reaction: tile.def.reactions[right.def.id], xOff: 1, yOff: 0});
-
-					if (possibleReactions.length > 0) {
-
-						let greatest = 0;
-						for (let i = 0; i < possibleReactions.length; i++) {
-							if (possibleReactions[greatest].reaction.speed < possibleReactions[i].reaction.speed) greatest = i;
-						}
-						
-						let selected = possibleReactions[greatest];
-
-						if (Math.random() <= selected.reaction.speed) {
-							const newDef = tileDefs.getById(selected.reaction.makes);
-							if (newDef) {
-								tile.resetDef(newDef);
-								if (selected.reaction.byproduct) {
-									const byDef = tileDefs.getById(selected.reaction.byproduct);
-									if (byDef) {
-										this.setTile(x+selected.xOff, y+selected.yOff, tileDefs.getById(selected.reaction.byproduct));
-									}
-									else {
-										console.error("A " + tile.def.id + " tried to make a byproduct of " + selected.reaction.makes + ", but that doesn't exist!");
-									}
-								}
-								this.getTile(x+selected.xOff,y+selected.yOff).justReacted = true;
-								tile.justReacted = true;								
-							}
-							else {
-								console.error("A " + tile.def.id + " tried to produce a " + selected.reaction.makes + ", but that doesn't exist!");
-							}
-						}
+						if (reaction) {
+							dir.resetDef(tileDefs.getById(reaction.makes));
+							if (reaction.byproduct) tile.resetDef(tileDefs.getById(reaction.byproduct));
+							dir.justReacted = true;
+							tile.justReacted = true;
+							break;
+						}	
 
 					}
 
@@ -184,8 +157,8 @@ class World {
 								// Law 4
 
 								const mixProbability = tile.def.solubility > 0 ? Math.random() < tile.def.solubility : 0;
-								const reallyCanLeft = (canLeft && !topLeft.canReplace(left)) || mixProbability;
-								const reallyCanRight = (canRight && !topRight.canReplace(right)) || mixProbability;
+								const reallyCanLeft = !topLeft || (canLeft && !topLeft.canReplace(left)) || mixProbability;
+								const reallyCanRight = !topRight || (canRight && !topRight.canReplace(right)) || mixProbability;
 
 								if (canLeft && !canRight) {
 									if (reallyCanLeft) {
@@ -228,7 +201,7 @@ class World {
 			for (let y = 0; y < this.height; y++) {
 
 				const tile = this.tiles[x][y];
-				
+
 				if (tile.def.boilsAt !== undefined && !tile.justReacted && tile.temperature >= tile.def.boilsAt) {
 					if (tile.def.boilsTo) {
 						const newDef = tileDefs.getById(tile.def.boilsTo);

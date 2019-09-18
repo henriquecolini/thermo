@@ -80,7 +80,7 @@
 		"baseTemperature": 1800,
 		"conductivity": 0.9,
 		"reactions":{
-			"air": { "makes": "air", "speed": 0.4 }
+			"air": { "makes": "air", "speed": 0.01 }
 		}
 	}
 

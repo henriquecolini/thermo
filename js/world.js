@@ -73,41 +73,18 @@ var World = (function () {
                     var canRight = tile.canReplace(right);
                     var canBottomLeft = tile.canReplace(this.getTile(x - 1, y + 1));
                     var canBottomRight = tile.canReplace(this.getTile(x + 1, y + 1));
-                    var possibleReactions = [];
-                    if (top_1 && !top_1.justReacted && tile.def.reactions && tile.def.reactions[top_1.def.id])
-                        possibleReactions.push({ reaction: tile.def.reactions[top_1.def.id], xOff: 0, yOff: -1 });
-                    if (bottom && !bottom.justReacted && tile.def.reactions && tile.def.reactions[bottom.def.id])
-                        possibleReactions.push({ reaction: tile.def.reactions[bottom.def.id], xOff: 0, yOff: 1 });
-                    if (left && !left.justReacted && tile.def.reactions && tile.def.reactions[left.def.id])
-                        possibleReactions.push({ reaction: tile.def.reactions[left.def.id], xOff: -1, yOff: 0 });
-                    if (right && !right.justReacted && tile.def.reactions && tile.def.reactions[right.def.id])
-                        possibleReactions.push({ reaction: tile.def.reactions[right.def.id], xOff: 1, yOff: 0 });
-                    if (possibleReactions.length > 0) {
-                        var greatest = 0;
-                        for (var i = 0; i < possibleReactions.length; i++) {
-                            if (possibleReactions[greatest].reaction.speed < possibleReactions[i].reaction.speed)
-                                greatest = i;
-                        }
-                        var selected = possibleReactions[greatest];
-                        if (Math.random() <= selected.reaction.speed) {
-                            var newDef = tileDefs.getById(selected.reaction.makes);
-                            if (newDef) {
-                                tile.resetDef(newDef);
-                                if (selected.reaction.byproduct) {
-                                    var byDef = tileDefs.getById(selected.reaction.byproduct);
-                                    if (byDef) {
-                                        this.setTile(x + selected.xOff, y + selected.yOff, tileDefs.getById(selected.reaction.byproduct));
-                                    }
-                                    else {
-                                        console.error("A " + tile.def.id + " tried to make a byproduct of " + selected.reaction.makes + ", but that doesn't exist!");
-                                    }
-                                }
-                                this.getTile(x + selected.xOff, y + selected.yOff).justReacted = true;
-                                tile.justReacted = true;
-                            }
-                            else {
-                                console.error("A " + tile.def.id + " tried to produce a " + selected.reaction.makes + ", but that doesn't exist!");
-                            }
+                    var directions = [top_1, bottom, left, right];
+                    for (var i = 0; i < directions.length; i++) {
+                        var dir = directions[i];
+                        var reaction = dir && dir.def.reactions ? dir.def.reactions[tile.def.id] : undefined;
+                        reaction = reaction && Math.random() <= reaction.speed ? reaction : undefined;
+                        if (reaction) {
+                            dir.resetDef(tileDefs.getById(reaction.makes));
+                            if (reaction.byproduct)
+                                tile.resetDef(tileDefs.getById(reaction.byproduct));
+                            dir.justReacted = true;
+                            tile.justReacted = true;
+                            break;
                         }
                     }
                     if (!tile.justReacted && !tile.def.static) {
@@ -130,8 +107,8 @@ var World = (function () {
                         else if (tile.def.viscosity >= 0 && (canLeft || canRight)) {
                             if (Math.random() > tile.def.viscosity) {
                                 var mixProbability = tile.def.solubility > 0 ? Math.random() < tile.def.solubility : 0;
-                                var reallyCanLeft = (canLeft && !topLeft.canReplace(left)) || mixProbability;
-                                var reallyCanRight = (canRight && !topRight.canReplace(right)) || mixProbability;
+                                var reallyCanLeft = !topLeft || (canLeft && !topLeft.canReplace(left)) || mixProbability;
+                                var reallyCanRight = !topRight || (canRight && !topRight.canReplace(right)) || mixProbability;
                                 if (canLeft && !canRight) {
                                     if (reallyCanLeft) {
                                         this.replace(x, y, x - 1, y);
