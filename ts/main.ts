@@ -361,7 +361,7 @@ loadDefs((success, data) => {
 		}, 100);
 	}
 	else {
-		console.error("Failed loading tile definitions!");		
+		alert("Something went wrong, really wrong.\n\nError: Failed loading tile definitions! Try refreshing the page.");		
 	}
 
 });
