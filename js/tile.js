@@ -15,9 +15,11 @@ var Tile = (function () {
         this.justReacted = false;
         this.resetDef(tileDef);
     }
-    Tile.prototype.resetDef = function (def) {
+    Tile.prototype.resetDef = function (def, keepTemperature) {
+        if (keepTemperature === void 0) { keepTemperature = false; }
         this.def = def;
-        this.temperature = this.def.baseTemperature;
+        if (!keepTemperature)
+            this.temperature = this.def.baseTemperature;
     };
     Tile.prototype.getThermalColor = function () {
         return temperatureColor(this.temperature);

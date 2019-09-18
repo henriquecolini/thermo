@@ -123,8 +123,6 @@ class World {
 					if(right && !right.justReacted && tile.def.reactions && tile.def.reactions[right.def.id])
 						possibleReactions.push({reaction: tile.def.reactions[right.def.id], xOff: 1, yOff: 0});
 
-					let reacted = false;
-
 					if (possibleReactions.length > 0) {
 
 						let greatest = 0;
@@ -147,7 +145,6 @@ class World {
 										console.error("A " + tile.def.id + " tried to make a byproduct of " + selected.reaction.makes + ", but that doesn't exist!");
 									}
 								}
-								reacted = true;
 								this.getTile(x+selected.xOff,y+selected.yOff).justReacted = true;
 								tile.justReacted = true;								
 							}
@@ -158,7 +155,7 @@ class World {
 
 					}
 
-					if (!reacted && !tile.def.static) {
+					if (!tile.justReacted && !tile.def.static) {
 
 						// Law 1
 
@@ -224,6 +221,45 @@ class World {
 
 				this.tiles[x][y].justChanged = false;
 				
+			}
+		}
+
+		for (let x = 0; x < this.width; x++) {
+			for (let y = 0; y < this.height; y++) {
+
+				const tile = this.tiles[x][y];
+				
+				if (tile.def.boilsAt !== undefined && !tile.justReacted && tile.temperature >= tile.def.boilsAt) {
+					if (tile.def.boilsTo) {
+						const newDef = tileDefs.getById(tile.def.boilsTo);
+						if (newDef) {
+							tile.resetDef(newDef, !tile.def.forceTemperatureChange);
+							tile.justReacted = true;
+						}
+						else {
+							console.error("A " + tile.def.id + " tried boiling to " + tile.def.boilsTo + ", but that doesn't exist!");
+						}
+					}
+					else {
+						console.warn(tile.def.id + " has a boiling point but no molten version is specified!");							
+					}						
+				}
+
+				if (tile.def.freezesAt !== undefined && !tile.justReacted && tile.temperature < tile.def.freezesAt) {
+					if (tile.def.freezesTo) {
+						const newDef = tileDefs.getById(tile.def.freezesTo);
+						if (newDef) {
+							tile.resetDef(newDef, !tile.def.forceTemperatureChange);
+							tile.justReacted = true;
+						}
+						else {
+							console.error("A " + tile.def.id + " tried freezing to " + tile.def.freezesTo + ", but that doesn't exist!");
+						}
+					}
+					else {
+						console.warn(tile.def.id + " has a freezing point but no molten version is specified!");							
+					}						
+				}
 			}
 		}
 

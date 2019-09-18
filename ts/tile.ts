@@ -26,9 +26,9 @@ class Tile {
 		this.resetDef(tileDef);
 	}
 
-	public resetDef(def: TileDef) {
+	public resetDef(def: TileDef, keepTemperature: boolean = false) {
 		this.def = def;
-		this.temperature = this.def.baseTemperature;
+		if (!keepTemperature) this.temperature = this.def.baseTemperature;
 	}
 
 	public getThermalColor(): Color {

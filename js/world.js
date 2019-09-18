@@ -82,7 +82,6 @@ var World = (function () {
                         possibleReactions.push({ reaction: tile.def.reactions[left.def.id], xOff: -1, yOff: 0 });
                     if (right && !right.justReacted && tile.def.reactions && tile.def.reactions[right.def.id])
                         possibleReactions.push({ reaction: tile.def.reactions[right.def.id], xOff: 1, yOff: 0 });
-                    var reacted = false;
                     if (possibleReactions.length > 0) {
                         var greatest = 0;
                         for (var i = 0; i < possibleReactions.length; i++) {
@@ -103,7 +102,6 @@ var World = (function () {
                                         console.error("A " + tile.def.id + " tried to make a byproduct of " + selected.reaction.makes + ", but that doesn't exist!");
                                     }
                                 }
-                                reacted = true;
                                 this.getTile(x + selected.xOff, y + selected.yOff).justReacted = true;
                                 tile.justReacted = true;
                             }
@@ -112,7 +110,7 @@ var World = (function () {
                             }
                         }
                     }
-                    if (!reacted && !tile.def.static) {
+                    if (!tile.justReacted && !tile.def.static) {
                         if (canBottom) {
                             this.replace(x, y, x, y + 1);
                         }
@@ -161,6 +159,41 @@ var World = (function () {
                     }
                 }
                 this.tiles[x][y].justChanged = false;
+            }
+        }
+        for (var x = 0; x < this.width; x++) {
+            for (var y = 0; y < this.height; y++) {
+                var tile = this.tiles[x][y];
+                if (tile.def.boilsAt !== undefined && !tile.justReacted && tile.temperature >= tile.def.boilsAt) {
+                    if (tile.def.boilsTo) {
+                        var newDef = tileDefs.getById(tile.def.boilsTo);
+                        if (newDef) {
+                            tile.resetDef(newDef, !tile.def.forceTemperatureChange);
+                            tile.justReacted = true;
+                        }
+                        else {
+                            console.error("A " + tile.def.id + " tried boiling to " + tile.def.boilsTo + ", but that doesn't exist!");
+                        }
+                    }
+                    else {
+                        console.warn(tile.def.id + " has a boiling point but no molten version is specified!");
+                    }
+                }
+                if (tile.def.freezesAt !== undefined && !tile.justReacted && tile.temperature < tile.def.freezesAt) {
+                    if (tile.def.freezesTo) {
+                        var newDef = tileDefs.getById(tile.def.freezesTo);
+                        if (newDef) {
+                            tile.resetDef(newDef, !tile.def.forceTemperatureChange);
+                            tile.justReacted = true;
+                        }
+                        else {
+                            console.error("A " + tile.def.id + " tried freezing to " + tile.def.freezesTo + ", but that doesn't exist!");
+                        }
+                    }
+                    else {
+                        console.warn(tile.def.id + " has a freezing point but no molten version is specified!");
+                    }
+                }
             }
         }
     };

@@ -8,7 +8,7 @@
 		"conductivity": 0.04,
 		"defaultSelected": true,
 		"reactions": {
-			"water": {"makes": "mud", "speed": "0.05", "byproduct": "air"}
+			"water": {"makes": "mud", "speed": 0.05, "byproduct": "air"}
 		}
 	},
 
@@ -42,7 +42,10 @@
 		"conductivity": 0.8,
 		"viscosity": 0,
 		"slipperiness": 1,
-		"solubility": 0.125
+		"solubility": 0.125,
+		"reactions": {
+			"slime": {"makes": "slime", "speed": 0.1}
+		}
 	},
 
 	{
@@ -59,13 +62,26 @@
 
 	{
 		"name": "Slime",
-		"id":"lava",
+		"id":"slime",
 		"color": "5e6b2b",
-		"density": 4000,
+		"density": 900,
 		"baseTemperature": 293,
 		"conductivity": 0.6,
 		"viscosity": 0.9,
 		"slipperiness": 0,
 		"solubility": 0
+	},
+
+	{
+		"name": "Fire",
+		"id": "fire",
+		"color": "ff9959",
+		"density": "0.1",
+		"baseTemperature": 1800,
+		"conductivity": 0.9,
+		"reactions":{
+			"air": { "makes": "air", "speed": 0.4 }
+		}
 	}
+
 ]
