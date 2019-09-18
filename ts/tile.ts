@@ -20,6 +20,7 @@ class Tile {
 	public temperature: number;
 	public def: TileDef;
 	public justChanged = false;
+	public justReacted = false;
 	
 	constructor(tileDef: TileDef) {
 		this.resetDef(tileDef);
@@ -39,7 +40,7 @@ class Tile {
 	}
 
 	public canReplace(other: Tile): boolean {
-		return (other && true) && (!other.def.static) && (!this.def.static) && (this.def.density > other.def.density);
+		return (other && true) && (!other.def.static) && (!this.def.static) && (this.def.density > other.def.density) && (!other.justReacted);
 	}
 	
 }

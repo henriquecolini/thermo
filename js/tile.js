@@ -12,6 +12,7 @@ function lerpColor(a, b, amount) {
 var Tile = (function () {
     function Tile(tileDef) {
         this.justChanged = false;
+        this.justReacted = false;
         this.resetDef(tileDef);
     }
     Tile.prototype.resetDef = function (def) {
@@ -25,7 +26,7 @@ var Tile = (function () {
         return new Tile(this.def);
     };
     Tile.prototype.canReplace = function (other) {
-        return (other && true) && (!other.def.static) && (!this.def.static) && (this.def.density > other.def.density);
+        return (other && true) && (!other.def.static) && (!this.def.static) && (this.def.density > other.def.density) && (!other.justReacted);
     };
     return Tile;
 }());

@@ -60,6 +60,7 @@ var World = (function () {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
                 var tile = this.tiles[x][y];
+                tile.justReacted = false;
                 if (!tile.justChanged) {
                     var left = this.getTile(x - 1, y);
                     var right = this.getTile(x + 1, y);
@@ -73,13 +74,13 @@ var World = (function () {
                     var canBottomLeft = tile.canReplace(this.getTile(x - 1, y + 1));
                     var canBottomRight = tile.canReplace(this.getTile(x + 1, y + 1));
                     var possibleReactions = [];
-                    if (top_1 && tile.def.reactions && tile.def.reactions[top_1.def.id])
+                    if (top_1 && !top_1.justReacted && tile.def.reactions && tile.def.reactions[top_1.def.id])
                         possibleReactions.push({ reaction: tile.def.reactions[top_1.def.id], xOff: 0, yOff: -1 });
-                    if (bottom && tile.def.reactions && tile.def.reactions[bottom.def.id])
+                    if (bottom && !bottom.justReacted && tile.def.reactions && tile.def.reactions[bottom.def.id])
                         possibleReactions.push({ reaction: tile.def.reactions[bottom.def.id], xOff: 0, yOff: 1 });
-                    if (left && tile.def.reactions && tile.def.reactions[left.def.id])
+                    if (left && !left.justReacted && tile.def.reactions && tile.def.reactions[left.def.id])
                         possibleReactions.push({ reaction: tile.def.reactions[left.def.id], xOff: -1, yOff: 0 });
-                    if (right && tile.def.reactions && tile.def.reactions[right.def.id])
+                    if (right && !right.justReacted && tile.def.reactions && tile.def.reactions[right.def.id])
                         possibleReactions.push({ reaction: tile.def.reactions[right.def.id], xOff: 1, yOff: 0 });
                     var reacted = false;
                     if (possibleReactions.length > 0) {
@@ -103,6 +104,8 @@ var World = (function () {
                                     }
                                 }
                                 reacted = true;
+                                this.getTile(x + selected.xOff, y + selected.yOff).justReacted = true;
+                                tile.justReacted = true;
                             }
                             else {
                                 console.error("A " + tile.def.id + " tried to produce a " + selected.reaction.makes + ", but that doesn't exist!");
