@@ -84,6 +84,8 @@
 		"density": 900,
 		"baseTemperature": 293,
 		"conductivity": 0.6,
+		"boilsAt": 300,
+		"boilsTo": "oil",
 		"viscosity": 0.9,
 		"slipperiness": 0,
 		"solubility": 0
@@ -93,7 +95,7 @@
 		"name": "Fire",
 		"id": "fire",
 		"color": "ff9959",
-		"density": "0.1",
+		"density": 0.1,
 		"baseTemperature": 1800,
 		"conductivity": 0.9,
 		"freezesAt": 300,
@@ -108,12 +110,58 @@
 		"name": "Steam",
 		"id": "steam",
 		"color": "ffffff",
-		"density": "0.5",
+		"density": 0.5,
 		"baseTemperature": 400,
 		"conductivity": 0.6,
 		"freezesAt": 420,
 		"freezesTo": "water",
+		"forceTemperatureChange": true,
 		"hidden": true
+	},
+
+	{
+		"name": "Oil",
+		"id": "oil",
+		"density": 800,
+		"color":"000000",
+		"baseTemperature": 293,
+		"conductivity": 0.75,
+		"boilsAt": 400,
+		"boilsTo": "fire",
+		"forceTemperatureChange": true,
+		"viscosity": 0.1,
+		"slipperiness": 1,
+		"solubility": 0.1,
+		"reactions": {
+			"fire": { "makes": "fire", "speed": 0.01 }
+		}
+	},
+
+	{
+		"name": "Molten Metal",
+		"id":"molten_metal",
+		"color": "ffa74a",
+		"density": 8000,
+		"baseTemperature": 600,
+		"conductivity": 0.99,
+		"freezesAt": 500,
+		"freezesTo": "metal",
+		"viscosity": 0.4,
+		"slipperiness": 1,
+		"solubility": 0.06,
+		"hidden": true
+	},
+
+	{
+		"name": "Metal",
+		"id":"metal",
+		"color": "9c9c9c",
+		"density": 8000,
+		"baseTemperature": 293,
+		"conductivity": 0.99,
+		"boilsAt": 600,
+		"boilsTo": "molten_metal",
+		"static": true
 	}
 
 
