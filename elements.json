@@ -29,7 +29,7 @@
 		"density": 2000,
 		"baseTemperature": 293,
 		"conductivity": 0.01,
-		"boilsAt": 600,
+		"boilsAt": 1000,
 		"boilsTo": "lava"
 	},
 
@@ -68,9 +68,9 @@
 		"id":"lava",
 		"color": "FF8700",
 		"density": 4000,
-		"baseTemperature": 1500,
-		"conductivity": 0.02,
-		"freezesAt": 600,
+		"baseTemperature": 3000,
+		"conductivity": 0.1,
+		"freezesAt": 1000,
 		"freezesTo": "stone",
 		"viscosity": 0.6,
 		"slipperiness": 1,
@@ -96,12 +96,13 @@
 		"id": "fire",
 		"color": "ff9959",
 		"density": 0.1,
+		"decaySpeed": 0.1,
+		"decaysTo": "air",
 		"baseTemperature": 1800,
 		"conductivity": 0.9,
 		"freezesAt": 300,
 		"freezesTo": "air",
 		"reactions":{
-			"air": { "makes": "air", "speed": 0.01 },
 			"water":  { "makes": "air", "speed": 1 }
 		}
 	},
@@ -142,7 +143,7 @@
 		"id":"molten_metal",
 		"color": "ffa74a",
 		"density": 8000,
-		"baseTemperature": 600,
+		"baseTemperature": 3200,
 		"conductivity": 0.99,
 		"freezesAt": 500,
 		"freezesTo": "metal",

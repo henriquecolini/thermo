@@ -9,6 +9,8 @@ interface TileDef {
 	boilsAt?: number,
 	freezesTo?: string,
 	boilsTo?: string,
+	decaySpeed?: number,
+	decaysTo?: string,
 	forceTemperatureChange?: boolean,
 	slipperiness?: number,
 	viscosity?: number,

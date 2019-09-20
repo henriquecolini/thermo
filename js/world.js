@@ -138,6 +138,21 @@ var World = (function () {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
                 var tile = this.tiles[x][y];
+                if (tile.def.decaySpeed && Math.random() < tile.def.decaySpeed) {
+                    if (tile.def.decaysTo) {
+                        var newDef = tileDefs.getById(tile.def.decaysTo);
+                        if (newDef) {
+                            tile.resetDef(newDef, !tile.def.forceTemperatureChange);
+                            tile.justReacted = true;
+                        }
+                        else {
+                            console.error("A " + tile.def.id + " tried decaying to " + tile.def.decaysTo + ", but that doesn't exist!");
+                        }
+                    }
+                    else {
+                        console.warn(tile.def.id + " has a decay speed but no decay is specified!");
+                    }
+                }
                 if (tile.def.boilsAt !== undefined && !tile.justReacted && tile.temperature >= tile.def.boilsAt) {
                     if (tile.def.boilsTo) {
                         var newDef = tileDefs.getById(tile.def.boilsTo);
