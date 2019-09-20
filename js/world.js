@@ -43,11 +43,11 @@ var World = (function () {
             if (this.getTile(x + 1, y) && t.temperature > this.getTile(x + 1, y).temperature)
                 directions.push({ tile: this.getTile(x + 1, y), xOff: +1, yOff: 0 });
             var originalTemp = t.temperature;
-            var sharedTemp = (t.temperature * t.def.conductivity) / (directions.length + 1);
+            var sharedTemp = (t.temperature * t.def.heatTransmission) / (directions.length + 1);
             for (var i_1 = 0; i_1 < directions.length; i_1++) {
                 var dir = directions[i_1];
                 var diff = originalTemp - dir.tile.temperature;
-                var gained = sharedTemp * (diff / originalTemp);
+                var gained = dir.tile.def.heatAbsorption * sharedTemp * (diff / originalTemp);
                 dir.tile.temperature += gained;
                 t.temperature -= gained;
             }

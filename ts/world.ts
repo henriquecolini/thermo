@@ -69,12 +69,12 @@ class World {
 			if(this.getTile(x+1, y) && t.temperature > this.getTile(x+1, y).temperature) directions.push({tile: this.getTile(x+1, y), xOff: +1, yOff: 0});
 
 			let originalTemp = t.temperature;
-			let sharedTemp = (t.temperature * t.def.conductivity)/(directions.length+1);
+			let sharedTemp = (t.temperature * t.def.heatTransmission)/(directions.length+1);
 
 			for (let i = 0; i < directions.length; i++) {
 				const dir = directions[i];
 				let diff = originalTemp - dir.tile.temperature;
-				let gained = sharedTemp * (diff/originalTemp);
+				let gained = dir.tile.def.heatAbsorption * sharedTemp * (diff/originalTemp);
 				dir.tile.temperature += gained;
 				t.temperature -= gained;
 			}
