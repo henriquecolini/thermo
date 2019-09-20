@@ -153,7 +153,7 @@ var World = (function () {
                         console.warn(tile.def.id + " has a decay speed but no decay is specified!");
                     }
                 }
-                if (tile.def.boilsAt !== undefined && !tile.justReacted && tile.temperature >= tile.def.boilsAt) {
+                if (tile.def.boilsAt !== undefined && !tile.justReacted && tile.temperature >= tile.def.boilsAt && (tile.def.boilSpeed === undefined || Math.random() < tile.def.boilSpeed)) {
                     if (tile.def.boilsTo) {
                         var newDef = tileDefs.getById(tile.def.boilsTo);
                         if (newDef) {
@@ -168,7 +168,7 @@ var World = (function () {
                         console.warn(tile.def.id + " has a boiling point but no molten version is specified!");
                     }
                 }
-                if (tile.def.freezesAt !== undefined && !tile.justReacted && tile.temperature < tile.def.freezesAt) {
+                if (tile.def.freezesAt !== undefined && !tile.justReacted && tile.temperature < tile.def.freezesAt && (tile.def.freezeSpeed === undefined || Math.random() < tile.def.freezeSpeed)) {
                     if (tile.def.freezesTo) {
                         var newDef = tileDefs.getById(tile.def.freezesTo);
                         if (newDef) {

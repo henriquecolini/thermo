@@ -215,7 +215,7 @@ class World {
 					}
 				}
 
-				if (tile.def.boilsAt !== undefined && !tile.justReacted && tile.temperature >= tile.def.boilsAt) {
+				if (tile.def.boilsAt !== undefined && !tile.justReacted && tile.temperature >= tile.def.boilsAt && (tile.def.boilSpeed === undefined || Math.random() < tile.def.boilSpeed)) {
 					if (tile.def.boilsTo) {
 						const newDef = tileDefs.getById(tile.def.boilsTo);
 						if (newDef) {
@@ -231,7 +231,7 @@ class World {
 					}						
 				}
 
-				if (tile.def.freezesAt !== undefined && !tile.justReacted && tile.temperature < tile.def.freezesAt) {
+				if (tile.def.freezesAt !== undefined && !tile.justReacted && tile.temperature < tile.def.freezesAt && (tile.def.freezeSpeed === undefined || Math.random() < tile.def.freezeSpeed)) {
 					if (tile.def.freezesTo) {
 						const newDef = tileDefs.getById(tile.def.freezesTo);
 						if (newDef) {

@@ -55,6 +55,7 @@
 		"conductivity": 0.8,
 		"boilsAt": 420,
 		"boilsTo": "steam",
+		"boilSpeed": 0.2,
 		"viscosity": 0,
 		"slipperiness": 1,
 		"solubility": 0.125,
@@ -116,6 +117,7 @@
 		"conductivity": 0.6,
 		"freezesAt": 420,
 		"freezesTo": "water",
+		"freezeSpeed": 0.2,
 		"forceTemperatureChange": true,
 		"hidden": true
 	},
@@ -124,7 +126,7 @@
 		"name": "Oil",
 		"id": "oil",
 		"density": 800,
-		"color":"000000",
+		"color":"330000",
 		"baseTemperature": 293,
 		"conductivity": 0.75,
 		"boilsAt": 600,
@@ -165,6 +167,5 @@
 		"boilsTo": "molten_metal",
 		"static": true
 	}
-
 
 ]
