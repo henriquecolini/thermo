@@ -202,7 +202,7 @@
 		"name": "Cryofluid",
 		"id": "cryofluid",
 		"color": "30b0ff",
-		"density": 2000,
+		"density": 700,
 		"baseTemperature": 100,
 		"heatTransmission": 0.01,
 		"heatAbsorption": 0.8,
@@ -211,6 +211,54 @@
 		"boilSpeed": 0.2,
 		"slipperiness": 1,
 		"viscosity": 0
+	},
+
+	{
+		"name": "Seed",
+		"id": "seed",
+		"color": "6c6e57",
+		"density": 1050,
+		"baseTemperature": 293,
+		"heatTransmission": 0.3,
+		"heatAbsorption": 0.6,
+		"reactions": {
+			"dirt": { "makes": "$tree", "speed": 0.1 }
+		}
+	},
+
+	{
+		"name": "Leaves",
+		"id": "leaves",
+		"color": "667350",
+		"density": 1050,
+		"baseTemperature": 293,
+		"heatTransmission": 0.8,
+		"heatAbsorption": 0.8,
+		"boilsAt": 600,
+		"boilsTo": "fire",
+		"static": true,
+		"hidden": true,
+		"reactions": {
+			"fire": { "makes": "fire", "speed": 0.3 },
+			"lava": { "makes": "fire", "speed": 1 }
+		}
+	},
+
+	{
+		"name": "Wood",
+		"id": "wood",
+		"color": "695937",
+		"density": 1100,
+		"baseTemperature": 293,
+		"heatTransmission": 0.8,
+		"heatAbsorption": 0.8,
+		"boilsAt": 600,
+		"boilsTo": "fire",
+		"hidden": true,
+		"reactions": {
+			"fire": { "makes": "fire", "speed": 0.3 },
+			"lava": { "makes": "fire", "speed": 1 }
+		}
 	}
 
 ]

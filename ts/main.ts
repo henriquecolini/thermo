@@ -10,6 +10,7 @@ const elementsPanel = document.getElementById("elements");
 // Engine
 
 const tileDefs = new TileDefManager();
+const structs = new StructureManager();
 const world = new World();
 
 // Canvas
@@ -270,7 +271,7 @@ function handleScroll(evt: WheelEvent) {
 	}, 1);
 }
 
-function loadDefs(callback: (success: boolean, data: string) => any) {
+function loadDefs(callback: (success: boolean) => any) {
 
 	const request = new XMLHttpRequest();
 	const url = "elements.json";
@@ -331,7 +332,29 @@ function loadDefs(callback: (success: boolean, data: string) => any) {
 				}
 			}
 			
-			callback(success, request.responseText);
+			callback(success);
+
+		}
+	};
+
+}
+
+function loadStructs(callback: (success: boolean) => any) {
+
+	const request = new XMLHttpRequest();
+	const url = "structures.json";
+
+	request.open("GET", url);
+	request.send();
+
+	request.onreadystatechange = (ev) => {
+		if (request.readyState == 4) {
+
+			let success = request.status == 200;
+
+			if (success) structs.loadJSON(request.responseText);
+			
+			callback(success);
 
 		}
 	};
@@ -346,24 +369,39 @@ updateCanvasSize();
 camera.x = canvas.width/2;
 camera.y = canvas.height/2;
 
-loadDefs((success, data) => {
+let didDefsLoad = false;
+let didStructsLoad = false;
 
+function start() {
+	resetWorld();
+	setInterval(() => {
+		if (isMouseDown && !isPanning) {
+			placeTileAtMouse(lastPos.x, lastPos.y);
+		}
+		world.tick();
+		drawWorld();
+		draw();
+	}, 100);
+}
+
+loadDefs((success) => {
 	if (success) {
-
-		resetWorld();
-		setInterval(() => {
-			if (isMouseDown && !isPanning) {
-				placeTileAtMouse(lastPos.x, lastPos.y);
-			}
-			world.tick();
-			drawWorld();
-			draw();
-		}, 100);
+		didDefsLoad = true;
+		if (didStructsLoad) start();
 	}
 	else {
 		alert("Something went wrong, really wrong.\n\nError: Failed loading tile definitions! Try refreshing the page.");		
 	}
+});
 
+loadStructs((success) => {
+	if (success) {
+		didStructsLoad = true;
+		if (didDefsLoad) start();
+	}
+	else {
+		alert("Something went wrong, really wrong.\n\nError: Failed loading structure! Try refreshing the page.");		
+	}
 });
 
 btnReset.addEventListener("click", resetWorld);

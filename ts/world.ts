@@ -39,6 +39,25 @@ class World {
 
 	}
 
+	// Builds a structure
+
+	public build(structureId: string, x: number, y: number) {
+		let struct = structs.getById(structureId);
+		for (let xOff = 0; xOff < struct.tiles.length; xOff++) {
+			for (let yOff = 0; yOff < struct.tiles[xOff].length; yOff++) {
+				const def = struct.tiles[xOff][yOff];
+				if (def) {
+					const realX = x + xOff + (struct.xOffset? struct.xOffset : 0);
+					const realY = y + yOff + (struct.yOffset? struct.yOffset : 0);
+					const tile = this.getTile(realX, realY);
+					if (tile && ((x === realX && y === realY) || def.density > tile.def.density)) {
+						tile.resetDef(def);
+					}
+				}
+			}
+		}
+	}
+
 	// Runs temperature simulaton once
 
 	private temperatureTick() {
@@ -106,19 +125,30 @@ class World {
 					const canBottomLeft = tile.canReplace(this.getTile(x-1,y+1));
 					const canBottomRight = tile.canReplace(this.getTile(x+1,y+1));	
 
-					let directions = [top,bottom,left,right];
+					let directions = [
+						{tile: top, xOff: 0, yOff: -1},
+						{tile: bottom, xOff: 0, yOff: 1},
+						{tile: left, xOff: -1, yOff: 0},
+						{tile: right, xOff: 1, yOff: 0}
+					];
 
 					for (let i = 0; i < directions.length; i++) {
 
 						const dir = directions[i];
+						const other = dir.tile;
 
-						let reaction = dir && dir.def.reactions ? dir.def.reactions[tile.def.id] : undefined;
+						let reaction = other && other.def.reactions ? other.def.reactions[tile.def.id] : undefined;
 						reaction = reaction && Math.random() <= reaction.speed ? reaction : undefined;
 
 						if (reaction) {
-							dir.resetDef(tileDefs.getById(reaction.makes));
+							if (reaction.makes.charAt(0) === '$') {
+								this.build(reaction.makes.substr(1), x + dir.xOff, y + dir.yOff);
+							}
+							else {
+								other.resetDef(tileDefs.getById(reaction.makes));
+							}
 							if (reaction.byproduct) tile.resetDef(tileDefs.getById(reaction.byproduct));
-							dir.justReacted = true;
+							other.justReacted = true;
 							tile.justReacted = true;
 							break;
 						}	

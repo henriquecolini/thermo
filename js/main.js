@@ -5,6 +5,7 @@ var toggleThermal = document.getElementById("toggleThermal");
 var canvas = document.getElementById("canvas");
 var elementsPanel = document.getElementById("elements");
 var tileDefs = new TileDefManager();
+var structs = new StructureManager();
 var world = new World();
 var ctx = canvas.getContext("2d");
 var preCanvas = document.createElement("canvas");
@@ -225,27 +226,58 @@ function loadDefs(callback) {
                     _loop_1(i);
                 }
             }
-            callback(success, request.responseText);
+            callback(success);
+        }
+    };
+}
+function loadStructs(callback) {
+    var request = new XMLHttpRequest();
+    var url = "structures.json";
+    request.open("GET", url);
+    request.send();
+    request.onreadystatechange = function (ev) {
+        if (request.readyState == 4) {
+            var success = request.status == 200;
+            if (success)
+                structs.loadJSON(request.responseText);
+            callback(success);
         }
     };
 }
 updateCanvasSize();
 camera.x = canvas.width / 2;
 camera.y = canvas.height / 2;
-loadDefs(function (success, data) {
+var didDefsLoad = false;
+var didStructsLoad = false;
+function start() {
+    resetWorld();
+    setInterval(function () {
+        if (isMouseDown && !isPanning) {
+            placeTileAtMouse(lastPos.x, lastPos.y);
+        }
+        world.tick();
+        drawWorld();
+        draw();
+    }, 100);
+}
+loadDefs(function (success) {
     if (success) {
-        resetWorld();
-        setInterval(function () {
-            if (isMouseDown && !isPanning) {
-                placeTileAtMouse(lastPos.x, lastPos.y);
-            }
-            world.tick();
-            drawWorld();
-            draw();
-        }, 100);
+        didDefsLoad = true;
+        if (didStructsLoad)
+            start();
     }
     else {
         alert("Something went wrong, really wrong.\n\nError: Failed loading tile definitions! Try refreshing the page.");
+    }
+});
+loadStructs(function (success) {
+    if (success) {
+        didStructsLoad = true;
+        if (didDefsLoad)
+            start();
+    }
+    else {
+        alert("Something went wrong, really wrong.\n\nError: Failed loading structure! Try refreshing the page.");
     }
 });
 btnReset.addEventListener("click", resetWorld);

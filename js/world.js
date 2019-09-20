@@ -18,6 +18,22 @@ var World = (function () {
             }
         }
     };
+    World.prototype.build = function (structureId, x, y) {
+        var struct = structs.getById(structureId);
+        for (var xOff = 0; xOff < struct.tiles.length; xOff++) {
+            for (var yOff = 0; yOff < struct.tiles[xOff].length; yOff++) {
+                var def = struct.tiles[xOff][yOff];
+                if (def) {
+                    var realX = x + xOff + (struct.xOffset ? struct.xOffset : 0);
+                    var realY = y + yOff + (struct.yOffset ? struct.yOffset : 0);
+                    var tile = this.getTile(realX, realY);
+                    if (tile && ((x === realX && y === realY) || def.density > tile.def.density)) {
+                        tile.resetDef(def);
+                    }
+                }
+            }
+        }
+    };
     World.prototype.temperatureTick = function () {
         var arr = [];
         var world = this;
@@ -70,16 +86,27 @@ var World = (function () {
                     var canRight = tile.canReplace(right);
                     var canBottomLeft = tile.canReplace(this.getTile(x - 1, y + 1));
                     var canBottomRight = tile.canReplace(this.getTile(x + 1, y + 1));
-                    var directions = [top_1, bottom, left, right];
+                    var directions = [
+                        { tile: top_1, xOff: 0, yOff: -1 },
+                        { tile: bottom, xOff: 0, yOff: 1 },
+                        { tile: left, xOff: -1, yOff: 0 },
+                        { tile: right, xOff: 1, yOff: 0 }
+                    ];
                     for (var i = 0; i < directions.length; i++) {
                         var dir = directions[i];
-                        var reaction = dir && dir.def.reactions ? dir.def.reactions[tile.def.id] : undefined;
+                        var other = dir.tile;
+                        var reaction = other && other.def.reactions ? other.def.reactions[tile.def.id] : undefined;
                         reaction = reaction && Math.random() <= reaction.speed ? reaction : undefined;
                         if (reaction) {
-                            dir.resetDef(tileDefs.getById(reaction.makes));
+                            if (reaction.makes.charAt(0) === '$') {
+                                this.build(reaction.makes.substr(1), x + dir.xOff, y + dir.yOff);
+                            }
+                            else {
+                                other.resetDef(tileDefs.getById(reaction.makes));
+                            }
                             if (reaction.byproduct)
                                 tile.resetDef(tileDefs.getById(reaction.byproduct));
-                            dir.justReacted = true;
+                            other.justReacted = true;
                             tile.justReacted = true;
                             break;
                         }
