@@ -34,7 +34,7 @@ class TileDefManager {
 	public defaultSelected: TileDef;
 	private cache: {[index: string]: TileDef};
 	private static defaultDefs: TileDef[] = [
-		{name: "Wall", id:"wall", color: color(0x5c5955), density: Infinity, baseTemperature: 293, heatTransmission: 0, heatAbsorption: 0, static: true, defaultSelected: true},
+		{name: "Wall", id:"wall", color: color(0x6e6563), density: Infinity, baseTemperature: 293, heatTransmission: 0, heatAbsorption: 0, static: true, defaultSelected: true},
 		{name: "Air", id:"air", color: color(0xcfcfcf), density: 1, baseTemperature: 293, heatTransmission: 0.8, heatAbsorption: 0.2, viscosity: 0, solubility: 0.125}
 	];
 

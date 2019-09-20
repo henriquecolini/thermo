@@ -27,7 +27,7 @@
 	{
 		"name": "Stone",
 		"id":"stone",
-		"color": "525457",
+		"color": "323440",
 		"density": 2000,
 		"baseTemperature": 293,
 		"heatTransmission": 0.8,
