@@ -12,13 +12,18 @@ var StructureManager = (function () {
             struct.id = jsonStruct.id;
             struct.xOffset = jsonStruct.xOffset;
             struct.yOffset = jsonStruct.yOffset;
-            struct.tiles = [];
-            for (var y = 0; y < jsonStruct.tiles.length; y++) {
-                for (var x = 0; x < jsonStruct.tiles[y].length; x++) {
-                    if (!struct.tiles[x])
-                        struct.tiles[x] = [];
-                    struct.tiles[x][y] = tileDefs.getById(jsonStruct.tiles[y][x]);
+            struct.variants = [];
+            for (var i_1 = 0; i_1 < jsonStruct.variants.length; i_1++) {
+                var jsonVariant = jsonStruct.variants[i_1];
+                var variant = [];
+                for (var y = 0; y < jsonVariant.length; y++) {
+                    for (var x = 0; x < jsonVariant[y].length; x++) {
+                        if (!variant[x])
+                            variant[x] = [];
+                        variant[x][y] = tileDefs.getById(jsonVariant[y][x]);
+                    }
                 }
+                struct.variants.push(variant);
             }
             this.structures.push(struct);
         }

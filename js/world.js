@@ -20,9 +20,10 @@ var World = (function () {
     };
     World.prototype.build = function (structureId, x, y) {
         var struct = structs.getById(structureId);
-        for (var xOff = 0; xOff < struct.tiles.length; xOff++) {
-            for (var yOff = 0; yOff < struct.tiles[xOff].length; yOff++) {
-                var def = struct.tiles[xOff][yOff];
+        var index = Math.floor(Math.random() * struct.variants.length);
+        for (var xOff = 0; xOff < struct.variants[index].length; xOff++) {
+            for (var yOff = 0; yOff < struct.variants[index][xOff].length; yOff++) {
+                var def = struct.variants[index][xOff][yOff];
                 if (def) {
                     var realX = x + xOff + (struct.xOffset ? struct.xOffset : 0);
                     var realY = y + yOff + (struct.yOffset ? struct.yOffset : 0);

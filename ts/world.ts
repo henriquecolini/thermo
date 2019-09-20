@@ -43,9 +43,10 @@ class World {
 
 	public build(structureId: string, x: number, y: number) {
 		let struct = structs.getById(structureId);
-		for (let xOff = 0; xOff < struct.tiles.length; xOff++) {
-			for (let yOff = 0; yOff < struct.tiles[xOff].length; yOff++) {
-				const def = struct.tiles[xOff][yOff];
+		let index = Math.floor(Math.random() * struct.variants.length);
+		for (let xOff = 0; xOff < struct.variants[index].length; xOff++) {
+			for (let yOff = 0; yOff < struct.variants[index][xOff].length; yOff++) {
+				const def = struct.variants[index][xOff][yOff];
 				if (def) {
 					const realX = x + xOff + (struct.xOffset? struct.xOffset : 0);
 					const realY = y + yOff + (struct.yOffset? struct.yOffset : 0);

@@ -1,6 +1,6 @@
 interface Structure {
 	id: string
-	tiles: (TileDef|undefined)[][],
+	variants: (TileDef|undefined)[][][],
 	xOffset?: number,
 	yOffset?: number
 }
@@ -24,12 +24,17 @@ class StructureManager {
 			struct.id = jsonStruct.id;
 			struct.xOffset = jsonStruct.xOffset;
 			struct.yOffset = jsonStruct.yOffset;
-			struct.tiles = [];
-			for (let y = 0; y < jsonStruct.tiles.length; y++) {
-				for (let x = 0; x < jsonStruct.tiles[y].length; x++) {
-					if (!struct.tiles[x]) struct.tiles[x] = [];
-					struct.tiles[x][y] = tileDefs.getById(jsonStruct.tiles[y][x]);
+			struct.variants = [];
+			for (let i = 0; i < jsonStruct.variants.length; i++) {
+				const jsonVariant = jsonStruct.variants[i];
+				const variant = [] as (TileDef|undefined)[][];
+				for (let y = 0; y < jsonVariant.length; y++) {
+					for (let x = 0; x < jsonVariant[y].length; x++) {
+						if (!variant[x]) variant[x] = [];
+						variant[x][y] = tileDefs.getById(jsonVariant[y][x]);
+					}
 				}
+				struct.variants.push(variant);
 			}
 			this.structures.push(struct);
 		}
