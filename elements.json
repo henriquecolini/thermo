@@ -127,14 +127,15 @@
 		"color":"000000",
 		"baseTemperature": 293,
 		"conductivity": 0.75,
-		"boilsAt": 400,
+		"boilsAt": 600,
 		"boilsTo": "fire",
 		"forceTemperatureChange": true,
 		"viscosity": 0.1,
 		"slipperiness": 1,
 		"solubility": 0.1,
 		"reactions": {
-			"fire": { "makes": "fire", "speed": 0.01 }
+			"fire": { "makes": "fire", "speed": 0.2 },
+			"lava": { "makes": "fire", "speed": 1 }
 		}
 	},
 
@@ -145,7 +146,7 @@
 		"density": 8000,
 		"baseTemperature": 3200,
 		"conductivity": 0.99,
-		"freezesAt": 500,
+		"freezesAt": 950,
 		"freezesTo": "metal",
 		"viscosity": 0.4,
 		"slipperiness": 1,
@@ -160,7 +161,7 @@
 		"density": 8000,
 		"baseTemperature": 293,
 		"conductivity": 0.99,
-		"boilsAt": 600,
+		"boilsAt": 1000,
 		"boilsTo": "molten_metal",
 		"static": true
 	}
