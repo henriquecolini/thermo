@@ -68,5 +68,109 @@
 				]
 			}
 		]
+	},
+
+	{
+		"id": "palm_tree",
+		"variants": [
+			{
+				"xOffset": -2,
+				"yOffset": -10,
+				"tiles": [
+					[null,     "leaves", null,     "leaves", null    ],
+					["leaves", "leaves", "leaves", null,     "leaves"],
+					["leaves", null,     "leaves", "leaves", "leaves"],
+					[null,     "leaves", "wood",   "leaves", null    ],
+					["leaves", "leaves", "wood",   null,     "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ]
+				]
+			},
+			{
+				"xOffset": -3,
+				"yOffset": -11,
+				"tiles": [
+					[null,     "leaves", null,     "leaves", null    ],
+					["leaves", null,     "leaves", null,     "leaves"],
+					[null,     "leaves", "wood",   "leaves", null    ],
+					["leaves", null,     "wood",   null,     "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "leaves", null,     null    ],
+					[null,     null,     null,     "wood",   null    ],
+					[null,     null,     null,     "wood",   null    ],
+					[null,     null,     null,     "wood",   null    ],
+					[null,     null,     null,     "wood",   null    ],
+					[null,     null,     null,     "wood",   null    ]
+				]
+			},
+			{
+				"xOffset": -1,
+				"yOffset": -11,
+				"tiles": [
+					[null,     "leaves", null,     "leaves", null    ],
+					["leaves", null,     "leaves", null,     "leaves"],
+					[null,     "leaves", "wood",   "leaves", null    ],
+					["leaves", null,     "wood",   null,     "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "leaves", null,     null    ],
+					[null,     "wood",   null,     null,     null    ],
+					[null,     "wood",   null,     null,     null    ],
+					[null,     "wood",   null,     null,     null    ],
+					[null,     "wood",   null,     null,     null    ],
+					[null,     "wood",   null,     null,     null    ]
+				]
+			},
+			{
+				"xOffset": -3,
+				"yOffset": -9,
+				"tiles": [
+					[null,     "leaves", null,     "leaves", null    ],
+					["leaves", null,     "leaves", null,     "leaves"],
+					[null,     "leaves", "wood",   "leaves", null    ],
+					["leaves", null,     "wood",   null,     "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "leaves", null,     null    ],
+					[null,     null,     null,     "wood",   null    ],
+					[null,     null,     null,     "wood",   null    ],
+					[null,     null,     null,     "wood",   null    ],
+					[null,     null,     null,     "wood",   null    ]
+				]
+			},
+			{
+				"xOffset": -1,
+				"yOffset": -9,
+				"tiles": [
+					[null,     "leaves", null,     "leaves", null    ],
+					["leaves", null,     "leaves", null,     "leaves"],
+					[null,     "leaves", "wood",   "leaves", null    ],
+					["leaves", null,     "wood",   null,     "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "leaves", null,     null    ],
+					[null,     "wood",   null,     null,     null    ],
+					[null,     "wood",   null,     null,     null    ],
+					[null,     "wood",   null,     null,     null    ],
+					[null,     "wood",   null,     null,     null    ]
+				]
+			}
+		]
+	},
+	{
+		"id": "seaweed",
+		"variants": [
+			{
+				"yOffset": -2,
+				"tiles": [
+					["algae"],
+					["algae"],
+					["algae"]
+				]
+			}
+		]
 	}
 ]

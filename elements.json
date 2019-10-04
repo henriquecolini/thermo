@@ -221,8 +221,15 @@
 		"baseTemperature": 293,
 		"heatTransmission": 0.3,
 		"heatAbsorption": 0.6,
+		"boilsAt": 600,
+		"boilsTo": "fire",
 		"reactions": {
-			"dirt": { "makes": "$tree", "speed": 0.1 }
+			"fire": { "makes": "fire", "speed": 0.3 },
+			"lava": { "makes": "fire", "speed": 1 },
+			"dirt": { "makes": "$tree", "speed": 0.1 },
+			"sand": { "makes": "$palm_tree", "speed": 0.1 },
+			"water": { "makes": "$seaweed", "speed": 0.04 },
+			"mud": { "makes": "$seaweed", "speed": 0.1 }
 		}
 	},
 
@@ -241,6 +248,25 @@
 		"reactions": {
 			"fire": { "makes": "fire", "speed": 0.3 },
 			"lava": { "makes": "fire", "speed": 1 }
+		}
+	},
+
+	{
+		"name": "Algae",
+		"id": "algae",
+		"color": "667350",
+		"density": 1050,
+		"baseTemperature": 293,
+		"heatTransmission": 0.8,
+		"heatAbsorption": 0.8,
+		"boilsAt": 600,
+		"boilsTo": "fire",
+		"static": false,
+		"hidden": true,
+		"reactions": {
+			"fire": { "makes": "fire", "speed": 0.3 },
+			"lava": { "makes": "fire", "speed": 1 },
+			"mud": { "makes": "slime", "speed": 0.0001 }
 		}
 	},
 
