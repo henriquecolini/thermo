@@ -1,42 +1,72 @@
 [
 	{
 		"id": "tree",
-		"xOffset": -2,
-		"yOffset": -8,
 		"variants": [
-			[
-				[null,     "leaves", "leaves", "leaves", null    ],
-				["leaves", "leaves", "leaves", "leaves", "leaves"],
-				["leaves", "leaves", "leaves", "leaves", "leaves"],
-				["leaves", "leaves", "leaves", "leaves", "leaves"],
-				["leaves", "leaves", "leaves", "leaves", "leaves"],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ]
-			],
-			[
-				[null,     "leaves", "leaves", "leaves", null    ],
-				["leaves", "leaves", "leaves", "leaves", "leaves"],
-				["leaves", "leaves", "leaves", "leaves", "leaves"],
-				["leaves", "leaves", "leaves", "wood",   "leaves"],
-				["leaves", "leaves", "wood",   "leaves", "leaves"],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ]
-			],
-			[
-				[null,     "leaves", "leaves", "leaves", null    ],
-				["leaves", "leaves", "leaves", "leaves", "leaves"],
-				["leaves", "leaves", "leaves", "leaves", "leaves"],
-				["leaves", "wood",   "leaves", "wood",   "leaves"],
-				["leaves", "leaves", "wood",   "leaves", "leaves"],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ],
-				[null,     null,     "wood",   null,     null    ]
-			]
+			{
+				"xOffset": -2,
+				"yOffset": -8,
+				"tiles": [
+					[null,     "leaves", "leaves", "leaves", null    ],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ]
+				]
+			},
+			{
+				"xOffset": -2,
+				"yOffset": -8,
+				"tiles": [
+					[null,     "leaves", "leaves", "leaves", null    ],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "leaves", "leaves", "wood",   "leaves"],
+					["leaves", "leaves", "wood",   "leaves", "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ]
+				]
+			},
+			
+			{	
+				"xOffset": -2,
+				"yOffset": -8,
+				"tiles": [
+					[null,     "leaves", "leaves", "leaves", null    ],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "wood",   "leaves", "wood",   "leaves"],
+					["leaves", "leaves", "wood",   "leaves", "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ]
+				]
+			},
+			
+			{	
+				"xOffset": -2,
+				"yOffset": -11,
+				"tiles": [
+					[null,     "leaves", "leaves", "leaves", null    ],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "leaves", "leaves", "leaves", "leaves"],
+					["leaves", "wood",   "leaves", "wood",   "leaves"],
+					["leaves", "leaves", "wood",   "leaves", "leaves"],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ],
+					[null,     null,     "wood",   null,     null    ]
+				]
+			}
 		]
 	}
 ]

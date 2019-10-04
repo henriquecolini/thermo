@@ -21,12 +21,13 @@ var World = (function () {
     World.prototype.build = function (structureId, x, y) {
         var struct = structs.getById(structureId);
         var index = Math.floor(Math.random() * struct.variants.length);
-        for (var xOff = 0; xOff < struct.variants[index].length; xOff++) {
-            for (var yOff = 0; yOff < struct.variants[index][xOff].length; yOff++) {
-                var def = struct.variants[index][xOff][yOff];
+        var variant = struct.variants[index];
+        for (var xOff = 0; xOff < variant.tiles.length; xOff++) {
+            for (var yOff = 0; yOff < variant.tiles[xOff].length; yOff++) {
+                var def = variant.tiles[xOff][yOff];
                 if (def) {
-                    var realX = x + xOff + (struct.xOffset ? struct.xOffset : 0);
-                    var realY = y + yOff + (struct.yOffset ? struct.yOffset : 0);
+                    var realX = x + xOff + (variant.xOffset ? variant.xOffset : 0);
+                    var realY = y + yOff + (variant.yOffset ? variant.yOffset : 0);
                     var tile = this.getTile(realX, realY);
                     if (tile && ((x === realX && y === realY) || def.density > tile.def.density)) {
                         tile.resetDef(def);

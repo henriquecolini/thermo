@@ -10,17 +10,19 @@ var StructureManager = (function () {
             var jsonStruct = jsonStructs[i];
             var struct = {};
             struct.id = jsonStruct.id;
-            struct.xOffset = jsonStruct.xOffset;
-            struct.yOffset = jsonStruct.yOffset;
             struct.variants = [];
             for (var i_1 = 0; i_1 < jsonStruct.variants.length; i_1++) {
                 var jsonVariant = jsonStruct.variants[i_1];
-                var variant = [];
-                for (var y = 0; y < jsonVariant.length; y++) {
-                    for (var x = 0; x < jsonVariant[y].length; x++) {
-                        if (!variant[x])
-                            variant[x] = [];
-                        variant[x][y] = tileDefs.getById(jsonVariant[y][x]);
+                var variant = {
+                    xOffset: jsonVariant.xOffset ? jsonVariant.xOffset : 0,
+                    yOffset: jsonVariant.yOffset ? jsonVariant.yOffset : 0,
+                    tiles: []
+                };
+                for (var y = 0; y < jsonVariant.tiles.length; y++) {
+                    for (var x = 0; x < jsonVariant.tiles[y].length; x++) {
+                        if (!variant.tiles[x])
+                            variant.tiles[x] = [];
+                        variant.tiles[x][y] = tileDefs.getById(jsonVariant.tiles[y][x]);
                     }
                 }
                 struct.variants.push(variant);

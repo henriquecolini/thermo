@@ -44,12 +44,13 @@ class World {
 	public build(structureId: string, x: number, y: number) {
 		let struct = structs.getById(structureId);
 		let index = Math.floor(Math.random() * struct.variants.length);
-		for (let xOff = 0; xOff < struct.variants[index].length; xOff++) {
-			for (let yOff = 0; yOff < struct.variants[index][xOff].length; yOff++) {
-				const def = struct.variants[index][xOff][yOff];
+		let variant = struct.variants[index];
+		for (let xOff = 0; xOff < variant.tiles.length; xOff++) {
+			for (let yOff = 0; yOff < variant.tiles[xOff].length; yOff++) {
+				const def = variant.tiles[xOff][yOff];
 				if (def) {
-					const realX = x + xOff + (struct.xOffset? struct.xOffset : 0);
-					const realY = y + yOff + (struct.yOffset? struct.yOffset : 0);
+					const realX = x + xOff + (variant.xOffset? variant.xOffset : 0);
+					const realY = y + yOff + (variant.yOffset? variant.yOffset : 0);
 					const tile = this.getTile(realX, realY);
 					if (tile && ((x === realX && y === realY) || def.density > tile.def.density)) {
 						tile.resetDef(def);
